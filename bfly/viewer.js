@@ -51,7 +51,7 @@ J.Viewer.prototype.init = function() {
         crossOriginPolicy: 'Anonymous',
         showNavigationControl: true,
         navigatorSizeRatio: 0.25,
-        prefixUrl: '../images/icons/',
+        prefixUrl: 'images/icons/',
         minZoomImageRatio: 0.5,
         maxZoomPixelRatio: 10,
         timeout: 120000,
