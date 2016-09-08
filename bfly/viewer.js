@@ -17,6 +17,7 @@ DOJO.Viewer.prototype.init = function() {
     var lowLayer = this.base.make({});
     var topLayer = this.base.make({
         segment: '&segmentation=y&segcolor=y',
+        alpha: 0.6,
         layer: 1
     });
 
@@ -25,8 +26,7 @@ DOJO.Viewer.prototype.init = function() {
         tileSources: [lowLayer, topLayer],
         crossOriginPolicy: 'Anonymous',
         prefixUrl: 'images/icons/',
-        id: 'viaWebGL',
-        loaded: false
+        id: 'viaWebGL'
     });
 
     // Make a link to webGL
@@ -53,6 +53,7 @@ DOJO.Viewer.prototype.init = function() {
         }
     }
 
+//    seaGL.addHandler('tile-loaded',load);
     seaGL.addHandler('tile-drawing',draw);
 
     seaGL.init();

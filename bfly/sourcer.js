@@ -10,10 +10,10 @@ DOJO.Sourcer = function(terms) {
 
     // presets
     this.mip = 1;
-    this.z = 199;
+    this.z = 0;
     this.layer = 0;
     this.depth = 1;
-    this.alpha = 0.6;
+    this.alpha = 1;
     this.minLevel = 0;
     this.width = 1024;
     this.segment = '';
