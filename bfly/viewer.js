@@ -1,14 +1,14 @@
-var J = J || {};
+var DOJO = {};
 //-----------------------------------
 //
 // J.Viewer - test webGL overlay atop OpenSeaDragon
 //
 //-----------------------------------
 
-J.Viewer = function(baseLayer) {
+DOJO.Viewer = function(baseLayer) {
 
     // preset tile source
-    this.baseLayer = J.outclass(baseLayer, {
+    this.baseLayer = SCOPE.outclass(baseLayer, {
         getTileUrl : function( level, x, y ) {
             var width = this.getTileWidth(level);
             var height = this.getTileHeight(level);
@@ -18,12 +18,12 @@ J.Viewer = function(baseLayer) {
         },
         datapath : '/Volumes/NeuroData/mojo',
         server :   'localhost:2001',
-        tileSize : 512,
         height :   1024,
         width :    1024,
+        tileSize : 512,
         minLevel : 0,
         depth :    1,
-        z :        0,
+        z :        199,
         segment : '',
         alpha: 0.6,
         layer : 0,
@@ -31,30 +31,25 @@ J.Viewer = function(baseLayer) {
     });
 }
 
-J.Viewer.prototype.init = function() {
+DOJO.Viewer.prototype.init = function() {
 
     // Write the terms of this onto one layer
-    var lowLayer = J.outclass(this, this.baseLayer);
+    var lowLayer = SCOPE.outclass(this, this.baseLayer);
 
     // Add more needed openSeaDragon properties to each layer's tiles
     var max_max = Math.ceil(Math.log2(lowLayer.width/lowLayer.tileSize));
     lowLayer.maxLevel = Math.min(lowLayer.mip, max_max);
 
     // Write small changes onto the top layer
-    var topLayer = J.outclass({layer: 1}, lowLayer);
+    var topLayer = SCOPE.outclass({layer: 1}, lowLayer);
     topLayer.segment = '&segmentation=y&segcolor=y';
 
     // Open a seadragon with two layers
     var openSD = OpenSeadragon({
         tileSources: [lowLayer, topLayer],
-        id: this.container || 'viaWebGL',
         crossOriginPolicy: 'Anonymous',
-        showNavigationControl: true,
-        navigatorSizeRatio: 0.25,
         prefixUrl: 'images/icons/',
-        minZoomImageRatio: 0.5,
-        maxZoomPixelRatio: 10,
-        timeout: 120000,
+        id: 'viaWebGL',
         loaded: false
     });
 

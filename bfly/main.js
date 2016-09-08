@@ -1,4 +1,4 @@
-var J = J || {};
+var SCOPE = {};
 //-----------------------------------
 //
 // http://<host>:<port>/index.html?canvas&server=<...>&datapath=<...>
@@ -6,15 +6,13 @@ var J = J || {};
 //-----------------------------------
 window.onload = function(e){
 
-    var kwargs = J.parse();
-    M = {
-        view: new J.Viewer(kwargs)
-    };
-    M.view.init();
+    var kwargs = SCOPE.parse();
+    SCOPE.view = new DOJO.Viewer(kwargs);
+    SCOPE.view.init();
 };
 
 // Change any preset terms set in input address
-J.parse = function( input, output) {
+SCOPE.parse = function( input, output) {
     var output = output || {};
     var input = input || document.location.search;
     var string = decodeURI(input).slice(1);
@@ -32,7 +30,7 @@ J.parse = function( input, output) {
 };
 
 // Write a stronger class over a weaker one
-J.outclass = function(stronger, weaker) {
+SCOPE.outclass = function(stronger, weaker) {
     var out = {};
     for(var key in weaker) {
         out[key] = stronger[key] || weaker[key];
