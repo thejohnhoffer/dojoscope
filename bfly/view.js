@@ -5,22 +5,21 @@ var DOJO = DOJO || {};
 //
 //-----------------------------------
 
-DOJO.Viewer = function(terms) {
+DOJO.View = function(terms) {
 
     // preset tile source
-    this.base = new DOJO.Sourcer(terms);
-}
-
-DOJO.Viewer.prototype.init = function() {
+    DOJO.Source(terms);
 
     // Make the two layers
-    var lowLayer = this.base.make({});
-    var topLayer = this.base.make({
+    var lowLayer = new DOJO.Source({
+        segment: '',
+        layer: 0
+    });
+    var topLayer = new DOJO.Source({
         segment: '&segmentation=y&segcolor=y',
-        alpha: 0.6,
         layer: 1
     });
-
+    topLayer.opacity = .4;
     // Open a seadragon with two layers
     var openSD = OpenSeadragon({
         tileSources: [lowLayer, topLayer],
@@ -34,26 +33,14 @@ DOJO.Viewer.prototype.init = function() {
     seaGL.vShader = 'shaders/vertex/square.glsl';
     seaGL.fShader = 'shaders/fragment/outline.glsl';
 
-    var load = function(callback, e) {
-
-        var source = e.tiledImage.source;
-        if (source.layer == 1) {
-            // Make the entire top tile transparent
-            e.tiledImage.setOpacity(source.alpha);
-            // via webGL
-            callback(e);
-        }
-    }
-
     var draw = function(callback, e) {
 
-        if (e.tile.loaded !==1) {
-            load(callback, e);
+        if (e.tiledImage.source.layer == 1 && e.tile.loaded !==1) {
+            callback(e);
             e.tile.loaded = 1;
         }
     }
 
-//    seaGL.addHandler('tile-loaded',load);
     seaGL.addHandler('tile-drawing',draw);
 
     seaGL.init();

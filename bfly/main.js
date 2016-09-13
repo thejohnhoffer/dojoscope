@@ -7,8 +7,7 @@ var SCOPE = {};
 window.onload = function(e){
 
     var kwargs = SCOPE.parse();
-    SCOPE.view = new DOJO.Viewer(kwargs);
-    SCOPE.view.init();
+    SCOPE.view = new DOJO.View(kwargs);
 };
 
 // Change any preset terms set in input address
@@ -28,12 +27,3 @@ SCOPE.parse = function( input, output) {
     });
     return output;
 };
-
-// Write a stronger class over a weaker one
-SCOPE.outclass = function(stronger, weaker) {
-    var out = {};
-    for(var key in weaker) {
-        out[key] = stronger[key] || weaker[key];
-    }
-    return out;
-}
