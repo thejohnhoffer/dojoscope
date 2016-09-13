@@ -11,13 +11,10 @@ DOJO.View = function(terms) {
     DOJO.Source(terms);
 
     // Make the two layers
-    var lowLayer = new DOJO.Source({
-        segment: '',
-        layer: 0
-    });
+    var lowLayer = new DOJO.Source({});
     var topLayer = new DOJO.Source({
-        segment: '&segmentation=y&segcolor=y',
-        layer: 1
+        segmentation: true,
+        segcolor: true
     });
     topLayer.opacity = .4;
     // Open a seadragon with two layers
@@ -34,10 +31,12 @@ DOJO.View = function(terms) {
     seaGL.fShader = 'shaders/fragment/outline.glsl';
 
     var draw = function(callback, e) {
-
-        if (e.tiledImage.source.layer == 1 && e.tile.loaded !==1) {
-            callback(e);
+        var layer = e.tiledImage;
+        var earth = e.eventSource.world;
+//        console.log(e.rendered.canvas.width);
+        if (earth.getIndexOfItem(layer) == 1 && e.tile.loaded !==1) {
             e.tile.loaded = 1;
+            callback(e);
         }
     }
 
