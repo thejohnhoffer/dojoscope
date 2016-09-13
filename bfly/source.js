@@ -28,7 +28,7 @@ DOJO.Source.prototype = {
     height: 8096,
     tileSize: 512,
     server: 'localhost:2001',
-    datapath: '/home/d/data/alyssa_large/mojo',
+    datapath: '/Neurodata/mojo',
     getTileUrl: function( level, x, y ) {
         var width = this.getTileWidth(level);
         var height = this.getTileHeight(level);

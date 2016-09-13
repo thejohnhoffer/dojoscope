@@ -1,7 +1,7 @@
 var SCOPE = {};
 //-----------------------------------
 //
-// http://<host>:<port>/index.html?canvas&server=<...>&datapath=<...>
+// http://<host>:<port>/index.html#server=<...>#datapath=<...>
 //
 //-----------------------------------
 window.onload = function(e){
@@ -13,10 +13,10 @@ window.onload = function(e){
 // Change any preset terms set in input address
 SCOPE.parse = function( input, output) {
     var output = output || {};
-    var input = input || document.location.search;
+    var input = input || document.location.hash;
     var string = decodeURI(input).slice(1);
     // read as bool, string, or int
-    string.split('&').map(function(pair) {
+    string.split('#').map(function(pair) {
         var key = pair.split('=')[0];
         var val = pair.split('=')[1];
         switch (!val*2 + !Number(val)) {
