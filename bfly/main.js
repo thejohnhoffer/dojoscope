@@ -8,8 +8,7 @@ window.onload = function(e){{}
 
     // preset tile source
     var terms = SCOPE.parse();
-    SCOPE.stack = new DOJO.Stack();
-    SCOPE.stack.init(terms);
+    SCOPE.stack = new DOJO.Stack(terms);
 
     // Open a seadragon with two layers
     SCOPE.openSD = OpenSeadragon({
