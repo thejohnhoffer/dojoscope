@@ -20,7 +20,7 @@ window.onload = function(e){{}
     });
 
     // Link everything to WebGL
-    SCOPE.view = new DOJO.Link(SCOPE.openSD);
+    SCOPE.link = new DOJO.Link(SCOPE.openSD);
 };
 
 // Change any preset terms set in input address

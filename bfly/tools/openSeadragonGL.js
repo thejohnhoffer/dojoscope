@@ -79,7 +79,7 @@ openSeadragonGL.prototype = {
     button: function(terms) {
 
         var name = terms.name || 'tool';
-        var prefix = terms.prefix || '';
+        var prefix = terms.prefix || this.openSD.prefixUrl;
         if (!terms.hasOwnProperty('onClick')){
             terms.onClick = this.shade;
         }

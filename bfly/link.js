@@ -1,7 +1,7 @@
 //-----------------------------------
 //
 // J.Link - Link webGL to OpenSeaDragon
-//    (Needs DOJO.Stack)
+//
 //-----------------------------------
 
 DOJO.Link = function(openSD) {
@@ -23,6 +23,15 @@ DOJO.Link = function(openSD) {
     }
 
     seaGL.addHandler('tile-drawing',draw);
-
+    seaGL.button({
+        prefixUrl: openSD.prefixUrl,
+        name: 'previous',
+        onClick: onClick
+    })
     seaGL.init();
+}
+DOJO.Link.prototype = {
+    onClick = function(){
+        console.log('hi')
+    }
 }

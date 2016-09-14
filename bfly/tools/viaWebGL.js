@@ -1,5 +1,8 @@
 /*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
-/* viaWebGL - Set shaders on Image or Canvas with WebGL
+/* viaWebGL
+/* Set shaders on Image or Canvas with WebGL
+/* Built on 2016-9-9
+/* http://via.hoff.in
 */
 ViaWebGL = function(incoming) {
 
@@ -61,12 +64,16 @@ ViaWebGL.prototype = {
     // Get a file as a promise
     getter: function(where) {
         return new Promise(function(done){
+            // Return if not a valid filename
+            if (where.slice(-4) != 'glsl') {
+                return done(where);
+            }
             var bid = new XMLHttpRequest();
             var win = function(){
                 if (bid.status == 200) {
                     return done(bid.response);
                 }
-                console.log("A bug on the web");
+                return done(where);
             };
             bid.open('GET', where, true);
             bid.onerror = bid.onload = win;
