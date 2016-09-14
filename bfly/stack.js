@@ -4,7 +4,7 @@
 //
 //-----------------------------------
 
-DOJO.Stack = function(scope) {
+DOJO.Stack = function() {
 
 }
 
