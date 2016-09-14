@@ -24,14 +24,17 @@ DOJO.Link = function(openSD) {
 
     seaGL.addHandler('tile-drawing',draw);
     seaGL.button({
-        prefixUrl: openSD.prefixUrl,
         name: 'previous',
-        onClick: onClick
+        onClick: this.onClick
+    })
+    seaGL.button({
+        name: 'next',
+        onClick: this.onClick
     })
     seaGL.init();
 }
 DOJO.Link.prototype = {
-    onClick = function(){
-        console.log('hi')
+    onClick: function(){
+        console.log('hi');
     }
 }
