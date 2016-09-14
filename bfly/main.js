@@ -4,7 +4,7 @@ var log = x => console.log(x);
 //-----------------------------------
 //
 // http://<host>:<port>/index.html#server=<...>#datapath=<...>
-//
+// (Needs DOJO.Stack + DOJO.Link)
 //-----------------------------------
 window.onload = function(e){{}
 
@@ -16,11 +16,12 @@ window.onload = function(e){{}
         tileSources: SCOPE.stack.layers,
         crossOriginPolicy: 'Anonymous',
         prefixUrl: 'images/icons/',
+        showZoomControl: 0,
         id: 'viaWebGL'
     });
 
     // Link everything to WebGL
-    SCOPE.link = new DOJO.Link(SCOPE.openSD);
+    SCOPE.link = new DOJO.Link(SCOPE);
 };
 
 // Change any preset terms set in input address
