@@ -1,33 +1,28 @@
 //-----------------------------------
 //
-// DOJO.Sourcer: makes tileSources
+// DOJO.Source: makes tileSources
 //
 //-----------------------------------
 
-DOJO.Source = function(terms){
-    var share = function(to, from) {
-        for (var key in from) {
-           to[key] = from[key];
-        }
-        return to;
-    }
-    share(this, terms);
+DOJO.Source = function(src_terms){
+
+    this.share(this, src_terms || {});
     // Only for the real tileSources
     if (this instanceof DOJO.Source) {
-        this.seg = '';
         var maxLevel = this.width/this.tileSize;
         this.maxLevel = Math.ceil(Math.log2(maxLevel));
         // Get the segmentation string for butterfly
-        for (var term of ['segmentation','segcolor'].filter(this.hasOwnProperty, this)) {
-            var which = {false:'=n',true:'=y'}[this[term]];
-            this.seg = this.seg.concat('&'+term+which);
+        if (this.segmentation) {
+            this.seg = '&segmentation=y&segcolor=y';
         }
-        return {tileSource: share({}, this)};
+        return {tileSource: this.share({}, this)};
     }
+    return this;
 }
 
 DOJO.Source.prototype = {
     z: 0,
+    seg: '',
     minLevel: 0,
     width: 8096,
     height: 8096,
@@ -41,6 +36,12 @@ DOJO.Source.prototype = {
             this.datapath + '&start=' + x*width + ',' + y*height + ',' +
             this.z + '&mip=' + (this.maxLevel - level) + '&size=' +
             width + ',' + height + ',' + 1 + this.seg;
+    },
+    share: function(to, from) {
+        for (var key in from) {
+           to[key] = from[key];
+        }
+        return to;
     }
 };
 DOJO.Source = DOJO.Source.bind(DOJO.Source.prototype);
