@@ -1,4 +1,6 @@
 var SCOPE = {};
+var DOJO = {};
+var log = x => console.log(x);
 //-----------------------------------
 //
 // http://<host>:<port>/index.html#server=<...>#datapath=<...>
@@ -7,8 +9,7 @@ var SCOPE = {};
 window.onload = function(e){{}
 
     // preset tile source
-    var terms = SCOPE.parse();
-    SCOPE.stack = new DOJO.Stack(terms);
+    SCOPE.stack  = SCOPE.parse(DOJO.Stack);
 
     // Open a seadragon with two layers
     SCOPE.openSD = OpenSeadragon({
@@ -23,7 +24,7 @@ window.onload = function(e){{}
 };
 
 // Change any preset terms set in input address
-SCOPE.parse = function() {
+SCOPE.parse = function(maker) {
     var output = {};
     var input = document.location.hash;
     var string = decodeURI(input).slice(1);
@@ -37,5 +38,5 @@ SCOPE.parse = function() {
             default: return output[key] = true;
         }
     });
-    return output;
+    return new maker(output);
 };

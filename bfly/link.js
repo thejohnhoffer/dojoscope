@@ -1,8 +1,7 @@
-var DOJO = DOJO || {};
 //-----------------------------------
 //
 // J.Link - Link webGL to OpenSeaDragon
-//
+//    (Needs DOJO.Stack)
 //-----------------------------------
 
 DOJO.Link = function(openSD) {

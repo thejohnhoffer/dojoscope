@@ -1,27 +1,34 @@
 //-----------------------------------
 //
 // DOJO.Stack: Stack some tileSources
-//
+//    (Needs DOJO.Source)
 //-----------------------------------
 
 DOJO.Stack = function(src_terms){
     // For all sources
     DOJO.Source(src_terms);
-    // Overlay the two layers
-    for (i in this.terms) {
-        // for all the depths
-        for (var z in new Uint8Array(this.depth)) {
-            var source = new DOJO.Source(this.src[i%2]);
-            this.share(source, this.terms[i]);
+    // lay layers in z buffer
+    for (var z in [-1,1,0]) {
+        for (var lay of this.preset) {
+            log(lay);
+            var source = new DOJO.Source(lay.src);
+            this.share(source, lay.set);
             this.layers.push(source);
         }
     }
 }
 
 DOJO.Stack.prototype = {
-    share: DOJO.Source().share,
-    src: [{},{segmentation: true}],
-    terms: [{},{opacity: .4}],
     layers: [],
-    depth: 1
+    share: DOJO.Source().share,
+    preset: [
+        {
+            set: {},
+            src: {z: 0}
+        },
+        {
+            set: {opacity: .4},
+            src: {z: 0, segmentation: true}
+        }
+    ]
 };
