@@ -24,22 +24,26 @@ DOJO.Link.prototype = {
         {
             name: 'up',
             onClick: function(){
-                // Lose two stacks down
+
+                // Lose the downmost stack
                 this.ask(0,'removeItem');
                 // Show the current stack
                 this.ask(1,'setItemIndex',0);
-                // Gain the next stack up
+                // Gain the upmost stack
                 var up = this.stack.slice(this.getZ(1),this.getN(-1))
                 up.map(this.openSD.addTiledImage,this.openSD);
-                // log
-                console.clear();
-                this.openSD.world._items.map(i=>log(i.source.z));
             }
         },
         {
             name: 'down',
             onClick: function(){
-
+                // Lose the upmost stack
+                this.ask(1,'removeItem');
+                // Show the current stack
+                this.ask(1,'setItemIndex',0);
+                // Gain the downmost stack
+                var down = this.stack.slice(this.getZ(-1),this.getN(-2));
+                down.map(this.openSD.addTiledImage,this.openSD);
             }
         }
     ],
@@ -66,6 +70,11 @@ DOJO.Link.prototype = {
               }
         },this);
         return this._run.apply(this,args);
+    },
+    _log: function() {
+        console.clear();
+        this.openSD.world._items.map(i=>log(i.source.z));
+        log([this.getZ(-1),this.getN(-2)])
     },
     _run: function(from,act,to){
         var w = this.openSD.world;
