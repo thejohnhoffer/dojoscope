@@ -1,7 +1,7 @@
 //-----------------------------------
 //
 // J.Link - Link webGL to OpenSeaDragon
-// (Needs openSeadragonGL)
+// (Needs DOJO.Stack + openSeadragonGL)
 //-----------------------------------
 
 DOJO.Link = function(scope) {
@@ -32,12 +32,13 @@ DOJO.Link.prototype = {
         {
             name: 'up',
             onClick: function(){
-                var earth = this.openSD.world;
-                var two_down = [0,1].map(earth.getItemAt, earth);
-                two_down.map(earth.removeItem, earth);
+                var w = this.openSD.world;
                 // Lose the tiles two rows down
-                console.log(earth._items)
-//                earth.removeItem()
+                w._items.map(i=>log(i.source.z));
+                [0,1].map(w.getItemAt, w).map(w.removeItem, w);
+
+//                w._items.map(i=>log(i.source.z));
+                // Get new tileSources
             }
         },
         {

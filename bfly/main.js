@@ -1,6 +1,9 @@
 var SCOPE = {};
 var DOJO = {};
-var log = x => console.log(x);
+var log = x => {
+  console.log(x);
+  console.log(new Error().stack.split(/\n/).splice(2,2).join('\n'));
+}
 //-----------------------------------
 //
 // http://<host>:<port>/index.html#server=<...>#datapath=<...>
