@@ -1,8 +1,8 @@
 var SCOPE = {};
 var DOJO = {};
-var log = x => {
+var log = function(x,n) {
   console.log(x);
-  console.log(new Error().stack.split(/\n/).splice(2,2).join('\n'));
+  if (n) console.log(new Error().stack.split(/\n/).splice(2,n).join('\n'));
 }
 //-----------------------------------
 //

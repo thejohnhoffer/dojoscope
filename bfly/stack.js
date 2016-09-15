@@ -8,7 +8,7 @@ DOJO.Stack = function(src_terms){
     // For all sources
     DOJO.Source(src_terms);
     // lay all layers in z buffer
-    [0,1,0].map(this.slice, this);
+    [9,11,10].map(this.slice, this);
     // Clear the index for internal records
     this.layers.map(this.clear, this);
 }
