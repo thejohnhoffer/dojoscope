@@ -9,7 +9,8 @@ DOJO.Stack = function(src_terms){
     DOJO.Source(src_terms);
     // lay all layers in z buffer
     this.n = this.preset.length;
-    [9,11,10].map(this.slice, this);
+    this.buff = (this.firsts.length-1)/2;
+    this.firsts.map(this._slice, this);
     // Clear the index for internal records
     this.layers.map(this.clear, this);
 }
@@ -17,6 +18,7 @@ DOJO.Stack = function(src_terms){
 DOJO.Stack.prototype = {
     layers: [],
     share: DOJO.Source().share,
+    firsts: [11,12,13,7,8,9,10],
     preset: [
         {
             set: {},
@@ -34,17 +36,19 @@ DOJO.Stack.prototype = {
         return this.share(source, set);
     },
     slice: function(z,i) {
-        var index = this.layout(i);
         return this.preset.map(function(ps,pi){
-            var source = this.make(ps,z,index[pi]);
+            var source = this.make(ps,z,i[pi]);
             this.layers.push(source);
             return source;
         },this);
     },
+    _slice: function(z,i) {
+        return this.slice(z,this.bound(i));
+    },
     clear: function(layer) {
         this.share(layer,{index:undefined});
     },
-    layout: function(n) {
+    bound: function(n) {
         return [this.n*n,this.n*n+1];
     }
 };

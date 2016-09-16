@@ -12,6 +12,8 @@ DOJO.Link = function(scope) {
     seaGL.vShader = 'shaders/vertex/square.glsl';
     this.openSD = seaGL.openSD;
     this.stack = scope.stack;
+    this.buff = this.stack.buff;
+    this.overflow = this.buff+1;
 
     // Add WebGL Drawing and Layer Buttons
     seaGL.addHandler('tile-drawing',this.draw);
@@ -20,29 +22,35 @@ DOJO.Link = function(scope) {
 }
 DOJO.Link.prototype = {
 
+    _log: function() {
+//        console.clear();
+//        log(this.getN(1))
+        this.openSD.world._items.map(i=>log(i.source.z));
+        log(' ')
+    },
     preset: [
         {
             name: 'up',
             onClick: function(){
-
+                // Show the new stack
+                this.show(1);
                 // Lose the downmost stack
-                this.ask(0,'removeItem');
-                // Show the current stack
-                this.ask(1,'setItemIndex',0);
+                this.lose(-this.overflow);
                 // Gain the upmost stack
-                var up = this.stack.slice(this.getZ(1),this.getN(-1))
+                var up = this.gain(this.buff,this.buff)
                 up.map(this.openSD.addTiledImage,this.openSD);
             }
         },
         {
             name: 'down',
             onClick: function(){
+                this._log();
+                // Hide the old Stack
+                this.hide(0);
                 // Lose the upmost stack
-                this.ask(1,'removeItem');
-                // Show the current stack
-                this.ask(1,'setItemIndex',0);
+                this.lose(this.overflow);
                 // Gain the downmost stack
-                var down = this.stack.slice(this.getZ(-1),this.getN(-2));
+                var down = this.gain(-this.buff,this.overflow)
                 down.map(this.openSD.addTiledImage,this.openSD);
             }
         }
@@ -56,34 +64,35 @@ DOJO.Link.prototype = {
             }
         }
     },
+    gain: function(offZ,offN){
+        return this.stack.slice(this.getZ(offZ),this.getN(offN));
+    },
     getN: function(offN){
-        return this.openSD.world.getItemCount()/this.stack.n + (offN || 0);
+        var total_items = this.openSD.world.getItemCount()/this.stack.n;
+        // Index from end of stack if tiles below or at current tile
+        return this.stack.bound(offN + (offN <= 0)*total_items-1);
     },
-    getZ: function(offZ,offN,layer){
-        return this.ask(this.getN(offN)-1)[layer || 0].source.z  + (offZ || 0);
+    getZ: function(offZ){
+        return this.get(0)[0].source.z  + offZ;
     },
-    ask: function(from, act, to) {
-        var args = Array.prototype.slice.call(arguments).map(function(n){
-              switch(isNaN(n)){
-                  case false: return this.stack.layout(n);
-                  default: return n;
-              }
-        },this);
-        return this._run.apply(this,args);
-    },
-    _log: function() {
-        console.clear();
-        this.openSD.world._items.map(i=>log(i.source.z));
-        log([this.getZ(-1),this.getN(-2)])
-    },
-    _run: function(from,act,to){
+    show: function(where) {
         var w = this.openSD.world;
-        switch (act) {
-          case 'setItemIndex': return this._run(from).map(function(it,i){
-              w.setItemIndex(it,to[i]);
-          });
-          case 'removeItem': return this._run(from).map(w[act],w);
-          default: return from.map(w.getItemAt, w);
-        }
+        var c = w.getItemCount()-1;
+        this.get(where).map(function(it){
+            w.setItemIndex(it, c);
+        });
+    },
+    hide: function(where) {
+        var w = this.openSD.world;
+        this.get(where).map(w.setItemIndex,w);
+    },
+    lose: function(where) {
+        var w = this.openSD.world;
+        this.get(where).map(w.removeItem,w);
+    },
+    get: function(where){
+        var n = this.getN(where);
+        var w = this.openSD.world;
+        return n.map(w.getItemAt, w);
     }
 }
