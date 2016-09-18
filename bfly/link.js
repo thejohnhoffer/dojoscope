@@ -12,8 +12,9 @@ DOJO.Link = function(scope) {
     seaGL.vShader = 'shaders/vertex/square.glsl';
     this.openSD = seaGL.openSD;
     this.stack = scope.stack;
-    this.buff = this.stack.buff;
+    this.buff = this.stack.buffer-1;
     this.overflow = this.buff+1;
+    this.zMap = this.stack.zMap;
 
     // Add WebGL Drawing and Layer Buttons
     seaGL.addHandler('tile-drawing',this.draw);
@@ -44,7 +45,7 @@ DOJO.Link.prototype = {
         {
             name: 'down',
             onClick: function(){
-                this._log();
+//                this._log();
                 // Hide the old Stack
                 this.hide(0);
                 // Lose the upmost stack
@@ -65,12 +66,7 @@ DOJO.Link.prototype = {
         }
     },
     gain: function(offZ,offN){
-        return this.stack.slice(this.getZ(offZ),this.getN(offN));
-    },
-    getN: function(offN){
-        var total_items = this.openSD.world.getItemCount()/this.stack.n;
-        // Index from end of stack if tiles below or at current tile
-        return this.stack.bound(offN + (offN <= 0)*total_items-1);
+        return this.stack.slice(this.getZ(offZ),offN);
     },
     getZ: function(offZ){
         return this.get(0)[0].source.z  + offZ;
@@ -91,7 +87,8 @@ DOJO.Link.prototype = {
         this.get(where).map(w.removeItem,w);
     },
     get: function(where){
-        var n = this.getN(where);
+                    log(where,3)
+        var n = this.zMap[where];
         var w = this.openSD.world;
         return n.map(w.getItemAt, w);
     }

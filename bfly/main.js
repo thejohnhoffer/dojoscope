@@ -13,10 +13,9 @@ window.onload = function(e){{}
 
     // preset tile source
     SCOPE.stack  = SCOPE.parse(DOJO.Stack);
-
     // Open a seadragon with two layers
     SCOPE.openSD = OpenSeadragon({
-        tileSources: SCOPE.stack.layers,
+        tileSources: SCOPE.stack.source,
         crossOriginPolicy: 'Anonymous',
         prefixUrl: 'images/icons/',
         showZoomControl: 0,

@@ -5,20 +5,25 @@
 //-----------------------------------
 
 DOJO.Stack = function(src_terms){
+
     // For all sources
     DOJO.Source(src_terms);
-    // lay all layers in z buffer
-    this.n = this.preset.length;
-    this.buff = (this.firsts.length-1)/2;
-    this.firsts.map(this._slice, this);
-    // Clear the index for internal records
-    this.layers.map(this.clear, this);
+
+    // Determine number of tiles above and below
+    var total = this.init(this.buffer,this.preset);
+    var length = new Uint8Array(total);
+    this.range = Object.keys(length);
+
+    // Map zStacks to real indices
+    this.zStack = this.range.map(this.zStacker,this);
+    this.zMap = this.zStack.reduce(this.zMapper.bind(this),{});
+    // Push all the initial sourced layers together
+    this.source = this.zStack.reduce(this.zSourcer.bind(this),[]);
 }
 
 DOJO.Stack.prototype = {
-    layers: [],
-    share: DOJO.Source().share,
-    firsts: [11,12,13,7,8,9,10],
+    buffer: 4,
+    first: 10,
     preset: [
         {
             set: {},
@@ -29,26 +34,31 @@ DOJO.Stack.prototype = {
             src: {segmentation: true}
         }
     ],
-    make: function(lay,z,i) {
-        var set = this.share({index:i},lay.set);
-        var src = this.share({z:z},lay.src);
-        var source = new DOJO.Source(src);
-        return this.share(source, set);
+    init: function(buffer, preset){
+        this.nLayers = preset.length;
+        return this.nLayers*buffer+this.nLayers-1;
     },
-    slice: function(z,i) {
-        return this.preset.map(function(ps,pi){
-            var source = this.make(ps,z,i[pi]);
-            this.layers.push(source);
-            return source;
+    make: function(z,i) {
+        return this.preset.map(function(lay,li){
+            var index = i? i[li] : undefined;
+            var source = new DOJO.Source(this.share({z:z},lay.src));
+            return this.share(source, this.share({index:index},lay.set));
         },this);
     },
-    _slice: function(z,i) {
-        return this.slice(z,this.bound(i));
+    share: DOJO.Source().share,
+    slice: function(offZ,offN) {
+        var map = [this.zMap, {}][Number(offN<0)];
+        return this.make(offZ, map[offN]);
     },
-    clear: function(layer) {
-        this.share(layer,{index:undefined});
+    zSourcer: function(out,lay) {
+        return out.concat(this.slice(lay+this.first,-1));
     },
-    bound: function(n) {
-        return [this.n*n,this.n*n+1];
+    zMapper: function(map,i) {
+        var n = +this.range.slice(i-1, i||undefined);
+        map[i]= [this.nLayers*n,this.nLayers*n+1];
+        return map;
+    },
+    zStacker: function(key) {
+        return key - this.buffer;
     }
 };
