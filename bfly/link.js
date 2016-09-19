@@ -6,51 +6,53 @@
 
 DOJO.Link = function(scope) {
 
-    this.stack = scope.stack;
+    var w = scope.openSD.world;
+    this.get = w.getItemAt.bind(w);
+    this.lose = w.removeItem.bind(w);
+    this.hide = w.setItemIndex.bind(w);
+    this.count = w.getItemCount.bind(w);
+    this.show = function(it){
+        return w.setItemIndex(it, this.count()-1);
+    };
+    this.getZ = function(offset){
+        return this.get(this.count()-1).source.z+offset;
+    };
+    this.gain = function(index){
+        var made = scope.stack.make(this.getZ(index), this.zMap[index]);
+        return made.map(scope.openSD.addTiledImage,scope.openSD);
+    };
+    this.go = function(where,func){
+        return this.zMap[where].map(this.get).map(func,this);
+    };
     this.openSD = scope.openSD;
-    this.buff = this.stack.buffer;
-    this.zMap = this.stack.zMap;
-
-    // Make a link to webGL
-    var seaGL = new openSeadragonGL(this.openSD);
-//    this.stack.source.map(this.openSD.addTiledImage,this.openSD);
-
-    seaGL.fShader = 'shaders/fragment/outline.glsl';
-    seaGL.vShader = 'shaders/vertex/square.glsl';
-
-    // Add WebGL Drawing and Layer Buttons
-    seaGL.addHandler('tile-drawing',this.draw);
-    this.preset.map(seaGL.button, this);
-    seaGL.init();
+    this.zMap = scope.stack.zMap;
+    this.buff = scope.stack.buffer;
 }
 DOJO.Link.prototype = {
 
     _log: function() {
-        this.openSD.world._items.map(i=>log(i.source.z));
+        this._w._items.map(i=>log(i.source.z));
         log(' ')
     },
     preset: [
         {
             name: 'up',
             onClick: function(){
-                this.z = this.getZ();
                 // Show new stack and lose downmost stack
-                this.show(1);
-                this.lose(this.buff);
+                this.go(1, this.show);
+                this.go(this.buff, this.lose);
                 // Gain the upmost stack
-                var up = this.gain(this.buff);
-                up.map(this.openSD.addTiledImage,this.openSD);
+                this.gain(this.buff);
             }
         },
         {
             name: 'down',
             onClick: function(){
                 // Hide old stack and lose the upmost stack
-                this.hide(0);
-                this.lose(-this.buff);
+                this.go(0, this.hide);
+                this.go(-this.buff, this.lose);
                 // Gain the downmost stack
-                var down = this.gain(-this.buff)
-                down.map(this.openSD.addTiledImage,this.openSD);
+                this.gain(-this.buff);
             }
         }
     ],
@@ -62,32 +64,15 @@ DOJO.Link.prototype = {
             }
         }
     },
-    gain: function(index){
-        return this.stack.make(this.getZ(index), this.zMap[index]);
-    },
-    getZ: function(offZ){
-        var w = this.openSD.world;
-        var c = w.getItemCount()-1;
-        return w.getItemAt(c).source.z+offZ;
-    },
-    show: function(where) {
-        var w = this.openSD.world;
-        var c = w.getItemCount()-1;
-        this.get(where).map(function(it){
-            w.setItemIndex(it, c);
-        });
-    },
-    hide: function(where) {
-        var w = this.openSD.world;
-        this.get(where).map(w.setItemIndex,w);
-    },
-    lose: function(where) {
-        var w = this.openSD.world;
-        this.get(where).map(w.removeItem,w);
-    },
-    get: function(where){
-        var n = this.zMap[where];
-        var w = this.openSD.world;
-        return n.map(w.getItemAt, w);
+    init: function(){
+        // Make a link to webGL
+        var seaGL = new openSeadragonGL(this.openSD);
+        seaGL.fShader = 'shaders/fragment/outline.glsl';
+        seaGL.vShader = 'shaders/vertex/square.glsl';
+
+        // Add WebGL Drawing and Layer Buttons
+        seaGL.addHandler('tile-drawing',this.draw);
+        this.preset.map(seaGL.button, this);
+        seaGL.init();
     }
 }
