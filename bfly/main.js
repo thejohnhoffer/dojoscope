@@ -15,13 +15,11 @@ window.onload = function(e){{}
     SCOPE.stack  = SCOPE.parse(DOJO.Stack);
     // Open a seadragon with two layers
     SCOPE.openSD = OpenSeadragon({
-        tileSources: SCOPE.stack.source,
         crossOriginPolicy: 'Anonymous',
         prefixUrl: 'images/icons/',
         showZoomControl: 0,
         id: 'viaWebGL'
     });
-
     // Link everything to WebGL
     SCOPE.link = new DOJO.Link(SCOPE);
 };

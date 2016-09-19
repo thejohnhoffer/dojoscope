@@ -6,15 +6,17 @@
 
 DOJO.Link = function(scope) {
 
+    this.stack = scope.stack;
+    this.openSD = scope.openSD;
+    this.buff = this.stack.buffer;
+    this.zMap = this.stack.zMap;
+
     // Make a link to webGL
-    var seaGL = new openSeadragonGL(scope.openSD);
+    var seaGL = new openSeadragonGL(this.openSD);
+    this.stack.source.map(this.openSD.addTiledImage,this.openSD);
+
     seaGL.fShader = 'shaders/fragment/outline.glsl';
     seaGL.vShader = 'shaders/vertex/square.glsl';
-    this.openSD = seaGL.openSD;
-    this.stack = scope.stack;
-    this.buff = this.stack.buffer-1;
-    this.overflow = this.buff+1;
-    this.zMap = this.stack.zMap;
 
     // Add WebGL Drawing and Layer Buttons
     seaGL.addHandler('tile-drawing',this.draw);
@@ -24,8 +26,6 @@ DOJO.Link = function(scope) {
 DOJO.Link.prototype = {
 
     _log: function() {
-//        console.clear();
-//        log(this.getN(1))
         this.openSD.world._items.map(i=>log(i.source.z));
         log(' ')
     },
@@ -33,31 +33,28 @@ DOJO.Link.prototype = {
         {
             name: 'up',
             onClick: function(){
-                // Show the new stack
+                this.z = this.getZ();
+                // Show new stack and lose downmost stack
                 this.show(1);
-                // Lose the downmost stack
-                this.lose(-this.overflow);
+                this.lose(this.buff);
                 // Gain the upmost stack
-                var up = this.gain(this.buff,this.buff)
+                var up = this.gain(this.buff);
                 up.map(this.openSD.addTiledImage,this.openSD);
             }
         },
         {
             name: 'down',
             onClick: function(){
-//                this._log();
-                // Hide the old Stack
+                // Hide old stack and lose the upmost stack
                 this.hide(0);
-                // Lose the upmost stack
-                this.lose(this.overflow);
+                this.lose(-this.buff);
                 // Gain the downmost stack
-                var down = this.gain(-this.buff,this.overflow)
+                var down = this.gain(-this.buff)
                 down.map(this.openSD.addTiledImage,this.openSD);
             }
         }
     ],
     draw: function(callback, e) {
-
         if (!('drawn' in e.tile)) {
             e.tile.drawn = true;
             if (e.tiledImage.source.segmentation) {
@@ -65,11 +62,13 @@ DOJO.Link.prototype = {
             }
         }
     },
-    gain: function(offZ,offN){
-        return this.stack.slice(this.getZ(offZ),offN);
+    gain: function(index){
+        return this.stack.make(this.getZ(index), this.zMap[index]);
     },
     getZ: function(offZ){
-        return this.get(0)[0].source.z  + offZ;
+        var w = this.openSD.world;
+        var c = w.getItemCount()-1;
+        return w.getItemAt(c).source.z+offZ;
     },
     show: function(where) {
         var w = this.openSD.world;
@@ -87,7 +86,6 @@ DOJO.Link.prototype = {
         this.get(where).map(w.removeItem,w);
     },
     get: function(where){
-                    log(where,3)
         var n = this.zMap[where];
         var w = this.openSD.world;
         return n.map(w.getItemAt, w);

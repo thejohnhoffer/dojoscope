@@ -34,24 +34,19 @@ DOJO.Stack.prototype = {
             src: {segmentation: true}
         }
     ],
+    share: DOJO.Source().share,
     init: function(buffer, preset){
         this.nLayers = preset.length;
         return this.nLayers*buffer+this.nLayers-1;
     },
-    make: function(z,i) {
+    make: function(zLevel, index) {
         return this.preset.map(function(lay,li){
-            var index = i? i[li] : undefined;
-            var source = new DOJO.Source(this.share({z:z},lay.src));
-            return this.share(source, this.share({index:index},lay.set));
+            var source = new DOJO.Source(this.share({z:zLevel},lay.src));
+            return this.share(source, this.share({index:index[li]},lay.set));
         },this);
     },
-    share: DOJO.Source().share,
-    slice: function(offZ,offN) {
-        var map = [this.zMap, {}][Number(offN<0)];
-        return this.make(offZ, map[offN]);
-    },
     zSourcer: function(out,lay) {
-        return out.concat(this.slice(lay+this.first,-1));
+        return out.concat(this.make(this.first+lay, this.zMap[lay]));
     },
     zMapper: function(map,i) {
         var n = +this.range.slice(i-1, i||undefined);
