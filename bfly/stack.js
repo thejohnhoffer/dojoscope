@@ -1,7 +1,7 @@
 //-----------------------------------
 //
 // DOJO.Stack: Stack some tileSources
-// (Needs DOJO.Source)
+// Calls DOJO.Source
 // -- Called by main.js
 //-----------------------------------
 

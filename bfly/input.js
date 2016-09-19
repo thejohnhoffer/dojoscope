@@ -1,7 +1,6 @@
 //-----------------------------------
 //
 // J.Input - Let people control slices
-// (Needs DOJO.Stack + openSeadragonGL)
 // -- Called by DOJO.link
 //-----------------------------------
 
@@ -15,35 +14,37 @@ DOJO.Input = function(scope) {
     this.lose = w.removeItem.bind(w);
     this.hide = w.setItemIndex.bind(w);
 
+    this.test = function(it) {
+      log(it.source.tileExists(0, 0, 0))
+    }
     this.show = function(it){
         return w.setItemIndex(it, w.getItemCount()-1);
-    };
+    }
     this.go = function(func, where){
-        return this.zMap[where].map(this.get).map(func,this);
-    };
+        return this.zMap[where].map(this.get).map(this[func],this);
+    }
     this.gain = function(index){
         var z = this.get(w.getItemCount()-1).source.z+index;
         var nextSlice = scope.stack.make(z, this.zMap[index]);
         return nextSlice.map(scope.openSD.addTiledImage,scope.openSD);
-    };
+    }
 }
 
 DOJO.Input.prototype = {
     up : function(){
-        this.log();
+        this.go('test', 1);
         // Show one stack up
-        this.go(this.show, 1);
+        this.go('show', 1);
         this.slice(+1);
     },
     down : function(){
-        this.log();
         // Hide upper stack
-        this.go(this.hide, 0);
+        this.go('hide', 0);
         this.slice(-1);
     },
     slice : function(sign){
         // Out with the old, in with the new
-        this.go(this.lose, sign*this.buff);
+        this.go('lose', sign*this.buff);
         this.gain(sign*this.buff);
     },
     log: function() {

@@ -1,7 +1,7 @@
 //-----------------------------------
 //
 // DOJO.Link - Link webGL to OpenSeaDragon
-// (Needs DOJO.Stack + DOJO.Input + openSeadragonGL)
+// Calls DOJO.Input + openSeadragonGL
 // -- Called by main.js
 //-----------------------------------
 
