@@ -8,6 +8,7 @@ var log = function(x,n) {
 //
 // http://<host>:<port>/index.html?server=<...>&datapath=<...>
 // (Needs DOJO.Stack + DOJO.Link)
+// -- Called first
 //-----------------------------------
 window.onload = function(e){{}
 

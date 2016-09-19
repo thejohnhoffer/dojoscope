@@ -1,7 +1,8 @@
 //-----------------------------------
 //
-// J.Link - Link webGL to OpenSeaDragon
+// DOJO.Link - Link webGL to OpenSeaDragon
 // (Needs DOJO.Stack + openSeadragonGL)
+// -- Called by main.js
 //-----------------------------------
 
 DOJO.Link = function(scope) {

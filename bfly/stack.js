@@ -2,6 +2,7 @@
 //
 // DOJO.Stack: Stack some tileSources
 // (Needs DOJO.Source)
+// -- Called by main.js
 //-----------------------------------
 
 DOJO.Stack = function(src_terms){
@@ -19,7 +20,7 @@ DOJO.Stack = function(src_terms){
 }
 
 DOJO.Stack.prototype = {
-    buffer: 4,
+    buffer: 2,
     first: 10,
     preset: [
         {
