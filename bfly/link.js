@@ -38,10 +38,10 @@ DOJO.Link.prototype = {
 
         // Add WebGL Drawing and Layer Buttons
         seaGL.addHandler('tile-drawing',this.draw);
-        this.preset.map(seaGL.button, this);
+        this.buttons.map(seaGL.button, this);
         seaGL.init();
     },
-    preset: [
+    buttons: [
         {
             name: 'up',
             onClick: function(){
