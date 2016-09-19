@@ -6,7 +6,7 @@ var log = function(x,n) {
 }
 //-----------------------------------
 //
-// http://<host>:<port>/index.html#server=<...>#datapath=<...>
+// http://<host>:<port>/index.html?server=<...>&datapath=<...>
 // (Needs DOJO.Stack + DOJO.Link)
 //-----------------------------------
 window.onload = function(e){{}
@@ -28,10 +28,10 @@ window.onload = function(e){{}
 // Change any preset terms set in input address
 SCOPE.parse = function(maker) {
     var output = {};
-    var input = document.location.hash;
+    var input = document.location.search;
     var string = decodeURI(input).slice(1);
     // read value pair as bool, string, or int
-    string.split('#').map(function(pair) {
+    string.split('&').map(function(pair) {
         var key = pair.split('=')[0];
         var val = pair.split('=')[1];
         switch (!val*2 + !Number(val)) {

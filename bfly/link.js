@@ -45,6 +45,7 @@ DOJO.Link.prototype = {
         {
             name: 'up',
             onClick: function(){
+                this.log();
                 // Show new stack and lose downmost stack
                 this.go(this.show, 1);
                 this.go(this.lose, this.buff);
@@ -55,6 +56,7 @@ DOJO.Link.prototype = {
         {
             name: 'down',
             onClick: function(){
+                this.log();
                 // Hide old stack and lose the upmost stack
                 this.go(this.hide, 0);
                 this.go(this.lose, -this.buff);
@@ -72,6 +74,7 @@ DOJO.Link.prototype = {
         }
     },
     log: function() {
+        console.clear();
         this.openSD.world._items.map(function(i){
             log(i.source.z);
         });
