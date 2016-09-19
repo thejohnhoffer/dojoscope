@@ -21,7 +21,7 @@ DOJO.Link = function(scope) {
         var made = scope.stack.make(this.getZ(index), this.zMap[index]);
         return made.map(scope.openSD.addTiledImage,scope.openSD);
     };
-    this.go = function(where,func){
+    this.go = function(func, where){
         return this.zMap[where].map(this.get).map(func,this);
     };
     this.openSD = scope.openSD;
@@ -30,17 +30,19 @@ DOJO.Link = function(scope) {
 }
 DOJO.Link.prototype = {
 
-    _log: function() {
-        this._w._items.map(i=>log(i.source.z));
-        log(' ')
+    log: function() {
+        this.openSD.world._items.map(function(i){
+            log(i.source.z);
+        });
+        log(' ');
     },
     preset: [
         {
             name: 'up',
             onClick: function(){
                 // Show new stack and lose downmost stack
-                this.go(1, this.show);
-                this.go(this.buff, this.lose);
+                this.go(this.show, 1);
+                this.go(this.lose, this.buff);
                 // Gain the upmost stack
                 this.gain(this.buff);
             }
@@ -49,8 +51,8 @@ DOJO.Link.prototype = {
             name: 'down',
             onClick: function(){
                 // Hide old stack and lose the upmost stack
-                this.go(0, this.hide);
-                this.go(-this.buff, this.lose);
+                this.go(this.hide, 0);
+                this.go(this.lose, -this.buff);
                 // Gain the downmost stack
                 this.gain(-this.buff);
             }
