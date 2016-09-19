@@ -13,7 +13,7 @@ DOJO.Link = function(scope) {
 
     // Make a link to webGL
     var seaGL = new openSeadragonGL(this.openSD);
-    this.stack.source.map(this.openSD.addTiledImage,this.openSD);
+//    this.stack.source.map(this.openSD.addTiledImage,this.openSD);
 
     seaGL.fShader = 'shaders/fragment/outline.glsl';
     seaGL.vShader = 'shaders/vertex/square.glsl';

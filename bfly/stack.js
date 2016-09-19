@@ -6,19 +6,16 @@
 
 DOJO.Stack = function(src_terms){
 
-    // For all sources
+    // Prepare the sources
     DOJO.Source(src_terms);
-
     // Determine number of tiles above and below
-    var total = this.init(this.buffer,this.preset);
-    var length = new Uint8Array(total);
-    this.range = Object.keys(length);
+    var range = Object.keys(new Uint8Array(this.size()));
 
-    // Map zStacks to real indices
-    this.zStack = this.range.map(this.zStacker,this);
-    this.zMap = this.zStack.reduce(this.zMapper.bind(this),{});
-    // Push all the initial sourced layers together
-    this.source = this.zStack.reduce(this.zSourcer.bind(this),[]);
+    // Map z offset to tiledImage indices
+    this.zMap = range.reduce(this.zMapper.bind(this),{});
+    // Push all the starting layers together to be shown in openSeadragon
+    this.zOrder = Object.keys(this.zMap).sort(this.zSorter.bind(this));
+    this.source = this.zOrder.reduce(this.zSourcer.bind(this),[]);
 }
 
 DOJO.Stack.prototype = {
@@ -35,9 +32,9 @@ DOJO.Stack.prototype = {
         }
     ],
     share: DOJO.Source().share,
-    init: function(buffer, preset){
-        this.nLayers = preset.length;
-        return this.nLayers*buffer+this.nLayers-1;
+    size: function(){
+        this.nLayers = this.preset.length;
+        return this.nLayers*(this.buffer+1)-1;
     },
     make: function(zLevel, index) {
         return this.preset.map(function(lay,li){
@@ -46,14 +43,15 @@ DOJO.Stack.prototype = {
         },this);
     },
     zSourcer: function(out,lay) {
-        return out.concat(this.make(this.first+lay, this.zMap[lay]));
+        return out.concat(this.make(+lay+this.first, [undefined,undefined]));
     },
-    zMapper: function(map,i) {
-        var n = +this.range.slice(i-1, i||undefined);
-        map[i]= [this.nLayers*n,this.nLayers*n+1];
+    zSorter: function(a,b) {
+        return Math.sign(this.zMap[a][0] - this.zMap[b][0]);
+    },
+    zMapper: function(map,i,_,range) {
+        var key = i - this.buffer;
+        var n = +range.slice(key-1, key||undefined);
+        map[key] = [this.nLayers*n,this.nLayers*n+1];
         return map;
-    },
-    zStacker: function(key) {
-        return key - this.buffer;
     }
 };
