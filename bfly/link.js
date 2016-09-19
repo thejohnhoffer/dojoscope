@@ -30,11 +30,16 @@ DOJO.Link = function(scope) {
 }
 DOJO.Link.prototype = {
 
-    log: function() {
-        this.openSD.world._items.map(function(i){
-            log(i.source.z);
-        });
-        log(' ');
+    init: function(){
+        // Make a link to webGL
+        var seaGL = new openSeadragonGL(this.openSD);
+        seaGL.fShader = 'shaders/fragment/outline.glsl';
+        seaGL.vShader = 'shaders/vertex/square.glsl';
+
+        // Add WebGL Drawing and Layer Buttons
+        seaGL.addHandler('tile-drawing',this.draw);
+        this.preset.map(seaGL.button, this);
+        seaGL.init();
     },
     preset: [
         {
@@ -66,15 +71,10 @@ DOJO.Link.prototype = {
             }
         }
     },
-    init: function(){
-        // Make a link to webGL
-        var seaGL = new openSeadragonGL(this.openSD);
-        seaGL.fShader = 'shaders/fragment/outline.glsl';
-        seaGL.vShader = 'shaders/vertex/square.glsl';
-
-        // Add WebGL Drawing and Layer Buttons
-        seaGL.addHandler('tile-drawing',this.draw);
-        this.preset.map(seaGL.button, this);
-        seaGL.init();
+    log: function() {
+        this.openSD.world._items.map(function(i){
+            log(i.source.z);
+        });
+        log(' ');
     }
 }
