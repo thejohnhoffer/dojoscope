@@ -20,7 +20,7 @@ DOJO.Stack = function(src_terms){
 }
 
 DOJO.Stack.prototype = {
-    buffer: 2,
+    buffer: 3,
     first: 10,
     preset: [
         {
