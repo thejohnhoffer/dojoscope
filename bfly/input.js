@@ -8,44 +8,43 @@
 DOJO.Input = function(scope) {
 
     var w = scope.openSD.world;
+    this.openSD = scope.openSD;
     this.zMap = scope.stack.zMap;
     this.buff = scope.stack.buffer;
     this.get = w.getItemAt.bind(w);
     this.lose = w.removeItem.bind(w);
     this.hide = w.setItemIndex.bind(w);
-    this.openSD = scope.openSD;
 
     this.show = function(it){
         return w.setItemIndex(it, w.getItemCount()-1);
     };
-    this.getZ = function(offset){
-        return this.get(w.getItemCount()-1).source.z+offset;
-    };
-    this.gain = function(index){
-        var made = scope.stack.make(this.getZ(index), this.zMap[index]);
-        return made.map(scope.openSD.addTiledImage,scope.openSD);
-    };
     this.go = function(func, where){
         return this.zMap[where].map(this.get).map(func,this);
+    };
+    this.gain = function(index){
+        var z = this.get(w.getItemCount()-1).source.z+index;
+        var nextSlice = scope.stack.make(z, this.zMap[index]);
+        return nextSlice.map(scope.openSD.addTiledImage,scope.openSD);
     };
 }
 
 DOJO.Input.prototype = {
     up : function(){
         this.log();
-        // Show new stack and lose downmost stack
+        // Show one stack up
         this.go(this.show, 1);
-        this.go(this.lose, this.buff);
-        // Gain the upmost stack
-        this.gain(this.buff);
+        this.slice(+1);
     },
     down : function(){
         this.log();
-        // Hide old stack and lose the upmost stack
+        // Hide upper stack
         this.go(this.hide, 0);
-        this.go(this.lose, -this.buff);
-        // Gain the downmost stack
-        this.gain(-this.buff);
+        this.slice(-1);
+    },
+    slice : function(sign){
+        // Out with the old, in with the new
+        this.go(this.lose, sign*this.buff);
+        this.gain(sign*this.buff);
     },
     log: function() {
         console.clear();
