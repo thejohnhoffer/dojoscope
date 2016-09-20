@@ -9,6 +9,8 @@ DOJO.Stack = function(src_terms){
 
     // Prepare the sources
     DOJO.Source(src_terms);
+    this.nLayers = this.preset.length;
+    this.total = this.nLayers*this.size();
     // Map z offset to tiledImage indices
     var range = Object.keys(new Uint8Array(this.size()));
     this.zMap = range.reduce(this.zMapper.bind(this),{});
@@ -18,7 +20,7 @@ DOJO.Stack = function(src_terms){
 }
 
 DOJO.Stack.prototype = {
-    buffer: 2,
+    buffer: 1,
     first: 10,
     preset: [
         {
@@ -32,8 +34,7 @@ DOJO.Stack.prototype = {
     ],
     share: DOJO.Source().share,
     size: function(){
-        this.nLayers = this.preset.length;
-        return this.nLayers*(this.buffer+1)-1;
+        return 2*(this.buffer+1)-1;
     },
     make: function(zLevel, index) {
         return this.preset.map(function(lay,li){

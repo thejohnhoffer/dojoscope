@@ -21,23 +21,17 @@ DOJO.Link.prototype = {
         seaGL.vShader = 'shaders/vertex/square.glsl';
 
         // Add WebGL Drawing and Layer Buttons
-        this.openSD.addHandler('tile-loaded',this.load);
-        seaGL.addHandler('tile-drawing',this.draw);
+        seaGL.addHandler('tile-loaded',this.load);
         this.buttons.map(seaGL.button, this.input);
+        this.openSD.addHandler('update-level',this.input.leveler.bind(this.input));
         seaGL.init();
     },
-    load: function(e) {
-        if ('waiting' in e.tiledImage) {
-            log('waited!')
-            e.tiledImage.waiting();
-            delete e.tiledImage.waiting;
-        }
-    },
-    draw: function(callback, e) {
-        if (!('drawn' in e.tile)) {
-            e.tile.drawn = true;
-            if (e.tiledImage.source.segmentation) {
-                callback(e);
+    load: function(callback, e) {
+        if (e.image && e.tiledImage.source.segmentation) {
+            callback(e);
+            if ('waiting' in e.tiledImage) {
+                e.tiledImage.waiting();
+                delete e.tiledImage.waiting;
             }
         }
     },
