@@ -13,14 +13,12 @@ DOJO.Input = function(scope) {
     this.get = w.getItemAt.bind(w);
     this.lose = w.removeItem.bind(w);
     this.hide = w.setItemIndex.bind(w);
-
-    this.test = function(it) {
-//      log(it.source.tileExists(4, 0, 0));
-//      console.error(it.lastDrawn.length);
-      it.source.addHandler('ready',function(e){
-      });
-            console.error(it)
+    this.waiting = false;
+    this.nexts = {
+        up: this.zMap[+1][1],
+        down: this.zMap[-1][1]
     }
+
     this.show = function(it){
         return w.setItemIndex(it, w.getItemCount()-1);
     }
@@ -32,24 +30,36 @@ DOJO.Input = function(scope) {
         var nextSlice = scope.stack.make(z, this.zMap[index]);
         return nextSlice.map(scope.openSD.addTiledImage,scope.openSD);
     }
+    this.waiter = function(event) {
+        if (this.waiting){
+            log('too much!')
+            return;
+        }
+        var it = this.get(this.nexts[event]);
+        if (it.lastDrawn.length) {
+            return this[event]();
+        }
+        it.waiting = this[event].bind(this);
+        this.waiting = true;
+    }
 }
 
 DOJO.Input.prototype = {
-    up : function(){
-        this.go('test', 1);
+    up: function(){
         // Show one stack up
         this.go('show', 1);
         this.slice(+1);
     },
-    down : function(){
+    down: function(){
         // Hide upper stack
         this.go('hide', 0);
         this.slice(-1);
     },
-    slice : function(sign){
+    slice: function(sign){
         // Out with the old, in with the new
         this.go('lose', sign*this.buff);
         this.gain(sign*this.buff);
+        this.waiting = false;
     },
     log: function() {
         console.clear();
