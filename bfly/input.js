@@ -15,7 +15,11 @@ DOJO.Input = function(scope) {
     this.hide = w.setItemIndex.bind(w);
 
     this.test = function(it) {
-      log(it.source.tileExists(0, 0, 0))
+//      log(it.source.tileExists(4, 0, 0));
+//      console.error(it.lastDrawn.length);
+      it.source.addHandler('ready',function(e){
+      });
+            console.error(it)
     }
     this.show = function(it){
         return w.setItemIndex(it, w.getItemCount()-1);

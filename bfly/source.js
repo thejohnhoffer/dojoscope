@@ -6,7 +6,7 @@
 
 DOJO.Source = function(src_terms){
 
-    this.share(this, src_terms || {});
+    this.share(src_terms || {}, this);
     // Only for the real tileSources
     if (this instanceof DOJO.Source) {
         var maxLevel = this.width/this.tileSize;
@@ -15,7 +15,7 @@ DOJO.Source = function(src_terms){
         if (this.segmentation) {
             this.seg = '&segmentation=y&segcolor=y';
         }
-        return {tileSource: this.share({}, this)};
+        return {tileSource: this.share(this, {})};
     }
     return this;
 }
@@ -37,7 +37,7 @@ DOJO.Source.prototype = {
             this.z + '&mip=' + (this.maxLevel - level) + '&size=' +
             width + ',' + height + ',' + 1 + this.seg;
     },
-    share: function(to, from) {
+    share: function(from, to) {
         for (var key in from) {
            to[key] = from[key];
         }

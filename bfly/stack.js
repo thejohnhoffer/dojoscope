@@ -9,10 +9,8 @@ DOJO.Stack = function(src_terms){
 
     // Prepare the sources
     DOJO.Source(src_terms);
-    // Determine number of tiles above and below
-    var range = Object.keys(new Uint8Array(this.size()));
-
     // Map z offset to tiledImage indices
+    var range = Object.keys(new Uint8Array(this.size()));
     this.zMap = range.reduce(this.zMapper.bind(this),{});
     // Push all the starting layers together to be shown in openSeadragon
     this.zOrder = Object.keys(this.zMap).sort(this.zSorter.bind(this));
@@ -39,8 +37,8 @@ DOJO.Stack.prototype = {
     },
     make: function(zLevel, index) {
         return this.preset.map(function(lay,li){
-            var source = new DOJO.Source(this.share({z:zLevel},lay.src));
-            return this.share(source, this.share({index:index[li]},lay.set));
+            var source = new DOJO.Source(this.share(lay.src, {z:zLevel}));
+            return this.share(this.share(lay.set, {index:index[li]}), source);
         },this);
     },
     zSourcer: function(out,lay) {
