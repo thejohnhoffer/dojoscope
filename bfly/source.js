@@ -30,12 +30,10 @@ DOJO.Source.prototype = {
     server: 'localhost:2001',
     datapath: '/Volumes/NeuroData/cylindojo/mojo',
     getTileUrl: function( level, x, y ) {
-        var width = this.getTileWidth(level);
-        var height = this.getTileHeight(level);
-        return 'http://' + this.server + '/data/?datapath=' +
-            this.datapath + '&start=' + x*width + ',' + y*height + ',' +
-            this.z + '&mip=' + (this.maxLevel - level) + '&size=' +
-            width + ',' + height + ',' + 1 + this.seg;
+        var settings = '';
+        return 'http://' + this.server + "/api/node/" + 0 + "/" +
+            settings + "/tile/" + this.z + "/" + level + "/" +
+            x + "_" + y + "_" + 1;
     },
     share: function(from, to) {
         for (var key in from) {
