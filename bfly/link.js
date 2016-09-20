@@ -8,6 +8,7 @@
 DOJO.Link = function(scope) {
 
     this.input = new DOJO.Input(scope);
+    window.addEventListener('keyup',this.input.key.bind(this.input));
     this.buttons = ['up','down'].map(this.linkButtons,this);
     this.openSD = scope.openSD;
 }

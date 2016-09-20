@@ -42,9 +42,17 @@ DOJO.Input = function(scope) {
         it.waiting = this[event].bind(this);
         this.waiting = true;
     }
+    this.keychain.ArrowUp = this.waiter.bind(this,'up');
+    this.keychain.ArrowDown = this.waiter.bind(this,'down');
 }
 
 DOJO.Input.prototype = {
+    keychain: {},
+    key: function(e){
+        if (e.key in this.keychain) {
+            this.keychain[e.key]();
+        }
+    },
     up: function(){
         // Show one stack up
         this.go('show', 1);
