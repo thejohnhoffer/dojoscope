@@ -6,6 +6,12 @@ openSeadragonGL = function(openSD) {
     /* OpenSeaDragon API calls
     ~*~*~*~*~*~*~*~*~*~*~*~*/
     this.interface = {
+        'tile-load-failed': function(e) {
+            // Set the imageSource as a data URL and then complete
+//            var output = this.viaGL.toCanvas(e.image);
+//            e.image.onload = e.getCompletionCallback();
+//            e.image.src = output.toDataURL();
+        },
         'tile-loaded': function(e) {
             // Set the imageSource as a data URL and then complete
             var output = this.viaGL.toCanvas(e.image);
@@ -19,6 +25,9 @@ openSeadragonGL = function(openSD) {
         }
     };
     this.defaults = {
+        'tile-load-failed': function(callback, e) {
+            callback(e);
+        },
         'tile-loaded': function(callback, e) {
             callback(e);
         },
