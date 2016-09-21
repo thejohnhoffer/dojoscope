@@ -34,9 +34,9 @@ DOJO.Stack.prototype = {
         }
     ],
     make: function(zLevel, index) {
-        return this.preset.map(function(lay,li){
-            var source = new DOJO.Source(this.share(lay.src, {z:zLevel}));
-            return this.share(this.share(lay.set, {index:index[li]}), source);
+        return this.preset.map(function(layer,i){
+            var source = new DOJO.Source(this.share(layer.src, {z:zLevel}));
+            return this.share(this.share(layer.set, {index:index[i]}), source);
         },this);
     },
     share: DOJO.Source().share
