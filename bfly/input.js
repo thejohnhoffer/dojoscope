@@ -11,10 +11,10 @@ DOJO.Input = function(scope) {
     this.zBuff = scope.stack.zBuff;
 
     this.index = {
+        start: scope.stack.index[0],
         up: scope.stack.index[1],
         down: scope.stack.index[2],
-        start: scope.stack.index[3],
-        end: scope.stack.index[0],
+        end: scope.stack.index[3],
     };
     this.swap = function(to){
         var from = this.index.end;
@@ -23,7 +23,7 @@ DOJO.Input = function(scope) {
         });
         from.map(w.getItemAt,w).map(function(fromItem,i){
             w.setItemIndex(fromItem, to[i]);
-        })
+        },this);
     }
     this.lose = function(lost){
         lost.map(w.getItemAt,w).map(w.removeItem,w);
@@ -49,11 +49,15 @@ DOJO.Input.prototype = {
     level: 0,
     keychain: {},
     up: function(){
+        this.log();
         this.swap(this.index.up);
+        this.log();
         this.lose(this.index.start);
+        this.log();
         this.gain(this.zBuff, this.index.end);
     },
     down: function(){
+        this.log();
         this.swap(this.index.down);
         this.lose(this.index.end);
         this.gain(-this.zBuff, this.index.start);
@@ -62,7 +66,7 @@ DOJO.Input.prototype = {
       this.level = e.level;
     },
     log: function() {
-        console.clear();
+//        console.clear();
         this.openSD.world._items.map(function(i){
             log(i.source.z);
         });

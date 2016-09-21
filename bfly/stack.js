@@ -29,7 +29,7 @@ DOJO.Stack = function(src_terms){
 
 DOJO.Stack.prototype = {
     zBuff: 2,
-    first: 40,
+    first: 0,
     preset: [
         {
             set: {},
