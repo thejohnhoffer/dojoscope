@@ -8,12 +8,14 @@ DOJO.Input = function(scope) {
 
     var w = scope.openSD.world;
     this.openSD = scope.openSD;
-    this.zMap = scope.stack.zMap;
-    this.buff = scope.stack.buffer;
-    this.total = scope.stack.total;
+    this.ZBuff = scope.stack.zBuff;
+    this.indexDown = scope.stack.indexDown;
+    this.indexUp = scope.stack.indexUp;
+    this.indexN = scope.stack.indexN;
+    this.indexO = scope.stack.indexO;
     this.nexts = {
-        up: this.zMap[+1][1],
-        down: this.zMap[-1][1]
+        up: this.indexUp,
+        down: this.indexDown
     };
     this.get = w.getItemAt.bind(w);
     this.lose = w.removeItem.bind(w);
@@ -53,19 +55,17 @@ DOJO.Input.prototype = {
         }
     },
     up: function(){
-        this.go('show', 1);
-        this.go('lose', 0);
+        this.go('show', this.indexUp);
+        this.go('move', this.indexUp);
+        this.go('lose', this.indexO);
+        this.gain(this.zBuff, this.indexN);
     },
     down: function(){
 
-        this.go('hide', 0);
-        this.go('lose',-1);
-    },
-    slice: function(sign){
-        // Out with the old, in with the new
-        this.go('lose', sign*this.buff);
-        this.gain(sign*this.buff);
-        delete this.waiting;
+        this.go('show', this.indexDown);
+        this.go('move', this.indexDown);
+        this.go('lose', this.indexN);
+        this.gain(this.zBuff, this.indexO);
     },
     leveler: function(e){
       this.level = e.level;

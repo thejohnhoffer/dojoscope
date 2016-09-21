@@ -7,21 +7,22 @@
 
 DOJO.Stack = function(src_terms){
 
+    var first = 3
+    var make = this.make.bind(this);
+    var flat = function(out,index) {
+        return out.concat(make(+index+first, [undefined,undefined]));
+    };
     // Prepare the sources
     DOJO.Source(src_terms);
     this.nLayers = this.preset.length;
-    this.total = this.nLayers*this.size();
     // Map z offset to tiledImage indices
-    var range = Object.keys(new Uint8Array(this.size()));
-    this.zMap = range.reduce(this.zMapper.bind(this),{});
-    // Push all the starting layers together to be shown in openSeadragon
-    this.zOrder = Object.keys(this.zMap).sort(this.zSorter.bind(this));
-    this.source = this.zOrder.reduce(this.zSourcer.bind(this),[]);
+    var range = Object.keys(new Uint8Array(2*this.zBuff-1));
+    range.push(range.splice(this.zBuff-1, 1)[0]);
+    this.source = range.reduce(flat,[]);
 }
 
 DOJO.Stack.prototype = {
-    buffer: 1,
-    first: 10,
+    zBuff: 2,
     preset: [
         {
             set: {},
@@ -32,26 +33,11 @@ DOJO.Stack.prototype = {
             src: {segmentation: true}
         }
     ],
-    share: DOJO.Source().share,
-    size: function(){
-        return 2*(this.buffer+1)-1;
-    },
     make: function(zLevel, index) {
         return this.preset.map(function(lay,li){
             var source = new DOJO.Source(this.share(lay.src, {z:zLevel}));
             return this.share(this.share(lay.set, {index:index[li]}), source);
         },this);
     },
-    zSourcer: function(out,lay) {
-        return out.concat(this.make(+lay+this.first, [undefined,undefined]));
-    },
-    zSorter: function(a,b) {
-        return Math.sign(this.zMap[a][0] - this.zMap[b][0]);
-    },
-    zMapper: function(map,i,_,range) {
-        var key = i - this.buffer;
-        var n = +range.slice(key-1, key||undefined);
-        map[key] = [this.nLayers*n,this.nLayers*n+1];
-        return map;
-    }
+    share: DOJO.Source().share
 };
