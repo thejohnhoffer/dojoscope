@@ -7,7 +7,7 @@
 
 DOJO.Stack = function(src_terms){
 
-    var first = 3
+    var first = 40;
     var make = this.make.bind(this);
     var flat = function(out,index) {
         return out.concat(make(+index+first, [undefined,undefined]));
@@ -19,6 +19,9 @@ DOJO.Stack = function(src_terms){
     var range = Object.keys(new Uint8Array(2*this.zBuff-1));
     range.push(range.splice(this.zBuff-1, 1)[0]);
     this.source = range.reduce(flat,[]);
+    this.index = {
+
+    };
 }
 
 DOJO.Stack.prototype = {

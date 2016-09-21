@@ -8,32 +8,33 @@ DOJO.Input = function(scope) {
 
     var w = scope.openSD.world;
     this.openSD = scope.openSD;
-    this.ZBuff = scope.stack.zBuff;
-    this.indexDown = scope.stack.indexDown;
-    this.indexUp = scope.stack.indexUp;
-    this.indexN = scope.stack.indexN;
-    this.indexO = scope.stack.indexO;
-    this.nexts = {
-        up: this.indexUp,
-        down: this.indexDown
+    this.zBuff = scope.stack.zBuff;
+
+    this.index = {
+        up: scope.stack.index.up,
+        down: scope.stack.index.down,
+        start: scope.stack.index.start,
+        end: scope.stack.index.end,
     };
-    this.get = w.getItemAt.bind(w);
-    this.lose = w.removeItem.bind(w);
-    this.hide = w.setItemIndex.bind(w);
-    this.count = w.getItemCount.bind(w);
-    this.show = function(it){
-        return w.setItemIndex(it, this.count()-1);
+    this.swap = function(to){
+        var from = this.index.end;
+        to.map(w.getItemAt,w).map(function(topItem){
+            w.setItemIndex(topItem, w.getItemCount()-1);
+        });
+        from.map(w.getItemAt,w).map(function(fromItem,i){
+            w.setItemIndex(fromItem, to[i]);
+        })
     }
-    this.go = function(func, where){
-        return this.zMap[where].map(this.get).map(this[func],this);
+    this.lose = function(lost){
+        lost.map(w.getItemAt,w).map(w.removeItem,w);
     }
-    this.gain = function(index){
-        var z = this.get(this.count()-1).source.z+index;
-        var nextSlice = scope.stack.make(z, this.zMap[index]);
-        return nextSlice.map(scope.openSD.addTiledImage,scope.openSD);
+    this.gain = function(offset, index){
+        var zLevel = offset + w.getItemAt(w.getItemCount()-1).source.z;
+        scope.stack.make(zLevel, index).map(scope.openSD.addTiledImage,scope.openSD);
     }
+
     this.waiter = function(event) {
-        var it = this.get(this.nexts[event]);
+        var it = w.getItemAt(this.index[event][1]);
         if (!('waiting' in this) || this.waiting == it.source.z){
             if (it.lastDrawn.length && it.lastDrawn[0].level >= this.level) {
                 return this[event]();
@@ -42,30 +43,20 @@ DOJO.Input = function(scope) {
             this.waiting = it.source.z;
         }
     }
-    this.keychain.ArrowUp = this.waiter.bind(this,'up');
-    this.keychain.ArrowDown = this.waiter.bind(this,'down');
 }
 
 DOJO.Input.prototype = {
     level: 0,
     keychain: {},
-    key: function(e){
-        if (e.key in this.keychain) {
-            this.keychain[e.key]();
-        }
-    },
     up: function(){
-        this.go('show', this.indexUp);
-        this.go('move', this.indexUp);
-        this.go('lose', this.indexO);
-        this.gain(this.zBuff, this.indexN);
+        this.swap(this.index.up);
+        this.lose(this.index.start);
+        this.gain(this.zBuff, this.index.end);
     },
     down: function(){
-
-        this.go('show', this.indexDown);
-        this.go('move', this.indexDown);
-        this.go('lose', this.indexN);
-        this.gain(this.zBuff, this.indexO);
+        this.swap(this.index.down);
+        this.lose(this.index.end);
+        this.gain(-this.zBuff, this.index.start);
     },
     leveler: function(e){
       this.level = e.level;
