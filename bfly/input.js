@@ -31,16 +31,13 @@ DOJO.Input = function(scope) {
         return nextSlice.map(scope.openSD.addTiledImage,scope.openSD);
     }
     this.waiter = function(event) {
-        var next = this.nexts[event];
-        var it = this.get(next);
-        if (this.count() == this.total) {
-            if (!('waiting' in this) || this.waiting == it.source.z){
-                if (it.lastDrawn.length && it.lastDrawn[0].level >= this.level) {
-                    return this[event]();
-                }
-                it.waiting = this.waiter.bind(this,event);
-                this.waiting = it.source.z;
+        var it = this.get(this.nexts[event]);
+        if (!('waiting' in this) || this.waiting == it.source.z){
+            if (it.lastDrawn.length && it.lastDrawn[0].level >= this.level) {
+                return this[event]();
             }
+            it.waiting = this.waiter.bind(this,event);
+            this.waiting = it.source.z;
         }
     }
     this.keychain.ArrowUp = this.waiter.bind(this,'up');
@@ -56,14 +53,13 @@ DOJO.Input.prototype = {
         }
     },
     up: function(){
-        // Show one stack up
         this.go('show', 1);
-        this.slice(+1);
+        this.go('lose', 0);
     },
     down: function(){
-        // Hide upper stack
+
         this.go('hide', 0);
-        this.slice(-1);
+        this.go('lose',-1);
     },
     slice: function(sign){
         // Out with the old, in with the new
