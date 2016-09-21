@@ -11,10 +11,10 @@ DOJO.Input = function(scope) {
     this.zBuff = scope.stack.zBuff;
 
     this.index = {
-        up: scope.stack.index.up,
-        down: scope.stack.index.down,
-        start: scope.stack.index.start,
-        end: scope.stack.index.end,
+        up: scope.stack.index[1],
+        down: scope.stack.index[2],
+        start: scope.stack.index[3],
+        end: scope.stack.index[0],
     };
     this.swap = function(to){
         var from = this.index.end;
@@ -34,7 +34,7 @@ DOJO.Input = function(scope) {
     }
 
     this.waiter = function(event) {
-        var it = w.getItemAt(this.index[event][1]);
+        var it = w.getItemAt(this.index[event].slice(-1));
         if (!('waiting' in this) || this.waiting == it.source.z){
             if (it.lastDrawn.length && it.lastDrawn[0].level >= this.level) {
                 return this[event]();
