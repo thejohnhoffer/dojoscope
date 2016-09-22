@@ -181,6 +181,10 @@ ViaWebGL.prototype = {
         });
         // Send the tile into the texture.
         var output = this.tex.texImage2D.concat([tile]);
+        if(tile instanceof Uint8Array) {
+            output.splice(3,0,this.width,this.height,0);
+            log(output)
+        }
         gl.texImage2D.apply(gl, output);
 
         // Draw everything needed to canvas

@@ -8,7 +8,9 @@ openSeadragonGL = function(openSD) {
     this.interface = {
         'tile-load-failed': function(e) {
             // Set the imageSource as a data URL and then complete
-            this.getter(e.tile.url).then(this.unzipper);
+            this.getter(e.tile.url).then(this.unzipper).then(function(raw){
+                var output = this.viaGL.toCanvas(raw);
+            }.bind(this));
 //            var output = this.viaGL.toCanvas(e.image);
 //            e.image.onload = e.getCompletionCallback();
 //            e.image.src = output.toDataURL();
@@ -105,20 +107,18 @@ openSeadragonGL.prototype = {
     },
     // Switch Shaders on or off
     shade: function() {
-
         this.viaGL.on++;
         this.openSD.world.resetItems();
     },
     unzipper: function(blob){
         var compressed = new Zlib.Inflate(new Uint8Array(blob));
-        var raw = compressed.decompress();
+        return compressed.decompress();
     },
     getter: function(where) {
         return new Promise(function(done){
             var bid = new XMLHttpRequest();
             var win = function(){
                 if (bid.status == 200) {
-                    log(bid.responseType);
                     return done(bid.response);
                 }
                 return done(where);
