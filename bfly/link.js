@@ -27,12 +27,12 @@ DOJO.Link.prototype = {
         seaGL.init();
     },
     load: function(callback, e) {
-        log(e.tile.url);
+//        log(e.tile.url);
         callback(e);
-        if ('waiting' in e.tiledImage) {
-            e.tiledImage.waiting();
-            delete e.tiledImage.waiting;
-        }
+//        if ('waiting' in e.tiledImage) {
+//            e.tiledImage.waiting();
+//            delete e.tiledImage.waiting;
+//        }
     },
     linkButtons: function(name) {
         return {

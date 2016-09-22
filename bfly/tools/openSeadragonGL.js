@@ -8,6 +8,7 @@ openSeadragonGL = function(openSD) {
     this.interface = {
         'tile-load-failed': function(e) {
             // Set the imageSource as a data URL and then complete
+            this.getter(e.tile.url).then(this.unzipper);
 //            var output = this.viaGL.toCanvas(e.image);
 //            e.image.onload = e.getCompletionCallback();
 //            e.image.src = output.toDataURL();
@@ -107,5 +108,25 @@ openSeadragonGL.prototype = {
 
         this.viaGL.on++;
         this.openSD.world.resetItems();
+    },
+    unzipper: function(blob){
+        var compressed = new Zlib.Inflate(new Uint8Array(blob));
+        var raw = compressed.decompress();
+    },
+    getter: function(where) {
+        return new Promise(function(done){
+            var bid = new XMLHttpRequest();
+            var win = function(){
+                if (bid.status == 200) {
+                    log(bid.responseType);
+                    return done(bid.response);
+                }
+                return done(where);
+            };
+            bid.onerror = bid.onload = win;
+            bid.responseType = 'arraybuffer';
+            bid.open('GET', where, true);
+            bid.send();
+        });
     }
 }
