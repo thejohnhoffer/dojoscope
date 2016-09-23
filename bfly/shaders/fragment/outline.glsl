@@ -1,4 +1,4 @@
-precision mediump float;
+precision highp float;
 uniform sampler2D u_tile;
 uniform vec2 u_tile_size;
 varying vec2 v_tile_pos;
@@ -8,6 +8,22 @@ varying vec2 v_tile_pos;
 //
 bool equals4(vec4 id1, vec4 id2) {
   return all(equal(id1,id2));
+}
+
+// rgba to one 32 bit int
+float unpack (vec4 value) {
+  // note: little endian
+  const vec4 bitShifts = pow(vec4(256.),vec4(3., 2., 1., 0.));
+  return dot(value.abgr, bitShifts);
+}
+
+vec4 colormap (float rad) {
+  vec4 answer = vec4(1.);
+  for (int n = 0; n < 3; n++) {
+      float k = pow(2.,float(8+n));
+      answer[n] = (1. + sin(k*rad))/2.;
+  }
+  return answer;
 }
 
 //
@@ -34,7 +50,7 @@ vec4 borders(sampler2D sam, vec2 pos) {
   if (!left || !right || !down || !top) {
     return vec4(0.,0.,0.,1.);
   }
-  return here_id;
+  return colormap(unpack(here_id));
 }
 
 

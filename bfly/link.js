@@ -51,9 +51,10 @@ DOJO.Link.prototype = {
         }
         var unzip = function(blob){
             var compressed = new Zlib.Inflate(new Uint8Array(blob));
-            return compressed.decompress();
+            var output = compressed.decompress();
+            return output;
         }
 
-        this.getter.call(buffer).then(unzip).then(callback);
+        return this.getter.call(buffer).then(unzip).then(callback);
     }
 }
