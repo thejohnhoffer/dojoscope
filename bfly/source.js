@@ -14,6 +14,9 @@ DOJO.Source = function(src_terms){
         // Get the segmentation string for butterfly
         if (this.segmentation) {
             this.seg = '&segmentation=y&output=zip';
+            this.getContext2D = function(){
+                return document.createElement('canvas').getContext('2d');
+            }
         }
         return {tileSource: this.share(this, {})};
     }

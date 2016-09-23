@@ -6,15 +6,6 @@ openSeadragonGL = function(openSD) {
     /* OpenSeaDragon API calls
     ~*~*~*~*~*~*~*~*~*~*~*~*/
     this.interface = {
-        'tile-load-failed': function(e) {
-            // Set the imageSource as a data URL and then complete
-            this.getter(e.tile.url).then(this.unzipper).then(function(raw){
-                var output = this.viaGL.toCanvas(raw);
-            }.bind(this));
-//            var output = this.viaGL.toCanvas(e.image);
-//            e.image.onload = e.getCompletionCallback();
-//            e.image.src = output.toDataURL();
-        },
         'tile-loaded': function(e) {
             // Set the imageSource as a data URL and then complete
             var output = this.viaGL.toCanvas(e.image);
@@ -28,9 +19,6 @@ openSeadragonGL = function(openSD) {
         }
     };
     this.defaults = {
-        'tile-load-failed': function(callback, e) {
-            callback(e);
-        },
         'tile-loaded': function(callback, e) {
             callback(e);
         },
@@ -109,24 +97,5 @@ openSeadragonGL.prototype = {
     shade: function() {
         this.viaGL.on++;
         this.openSD.world.resetItems();
-    },
-    unzipper: function(blob){
-        var compressed = new Zlib.Inflate(new Uint8Array(blob));
-        return compressed.decompress();
-    },
-    getter: function(where) {
-        return new Promise(function(done){
-            var bid = new XMLHttpRequest();
-            var win = function(){
-                if (bid.status == 200) {
-                    return done(bid.response);
-                }
-                return done(where);
-            };
-            bid.onerror = bid.onload = win;
-            bid.responseType = 'arraybuffer';
-            bid.open('GET', where, true);
-            bid.send();
-        });
     }
 }
