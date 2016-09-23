@@ -32,20 +32,18 @@ DOJO.Link.prototype = {
             onClick: this.input.waiter.bind(this.input,name)
         }
     },
-    drawing: function(zip, _, e) {
+    drawing: function(zip, callback, e) {
         if ('drawn' in e.tile) {
             return;
         }
         if(e.tiledImage.source.segmentation){
-            zip(this.viaGL, e.tile.url).then(function(result){
-                var input = e.rendered.canvas;
-                e.rendered.drawImage(result, 0, 0, input.width, input.height);
-            });
+            zip.call(this, callback, e);
         };
         e.tile.drawn = 1;
     },
-    zip: function(viaGL, url){
+    zip: function(callback, e){
 
+        var viaGL = this.viaGL;
         var buffer = function(_,bid){
              bid.responseType = 'arraybuffer';
              return 0;
@@ -54,10 +52,7 @@ DOJO.Link.prototype = {
             var compressed = new Zlib.Inflate(new Uint8Array(blob));
             return compressed.decompress();
         }
-        var filter = function(raw){
-            return viaGL.toCanvas(raw);
-        }
 
-        return viaGL.getter.call(buffer,url).then(unzip).then(filter);
+        viaGL.getter.call(buffer,e.tile.url).then(unzip).then(callback.bind(this,e));
     }
 }

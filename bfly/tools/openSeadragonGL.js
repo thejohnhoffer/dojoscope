@@ -12,10 +12,11 @@ openSeadragonGL = function(openSD) {
             e.image.onload = e.getCompletionCallback();
             e.image.src = output.toDataURL();
         },
-        'tile-drawing': function(e) {
+        'tile-drawing': function(e,raw) {
             // Render a webGL canvas to an input canvas
             var input = e.rendered.canvas;
-            e.rendered.drawImage(this.viaGL.toCanvas(input), 0, 0, input.width, input.height);
+            var output = this.viaGL.toCanvas(raw || input);
+            e.rendered.drawImage(output, 0, 0, input.width, input.height);
         }
     };
     this.defaults = {
