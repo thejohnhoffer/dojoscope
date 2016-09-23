@@ -38,15 +38,15 @@ DOJO.Link.prototype = {
         }
         if(e.tiledImage.source.segmentation){
             callback = callback.bind(this,e);
-            unzip.call(this, callback, e);
+            unzip.call(this.viaGL, callback, e);
         };
         e.tile.drawn = 1;
     },
     unzip: function(callback, e){
 
-        var viaGL = this.viaGL;
-        var buffer = function(_,bid){
-             bid.responseType = 'arraybuffer';
+        var buffer = function(given){
+             given.xhr.responseType = 'arraybuffer';
+             given.url = e.tile.url;
              return 0;
         }
         var unzip = function(blob){
@@ -54,6 +54,6 @@ DOJO.Link.prototype = {
             return compressed.decompress();
         }
 
-        viaGL.getter.call(buffer,e.tile.url).then(unzip).then(callback);
+        this.getter.call(buffer).then(unzip).then(callback);
     }
 }

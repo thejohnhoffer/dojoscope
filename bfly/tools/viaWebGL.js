@@ -49,8 +49,8 @@ ViaWebGL.prototype = {
         this.gl.canvas.height = this.height;
         this.gl.viewport(0, 0, this.width, this.height);
         // Return if not a valid filename
-        var glsl = function(where) {
-            return where.slice(-4) != 'glsl';
+        var glsl = function(given) {
+            return given.url.slice(-4) != 'glsl';
         }
         // Load the shaders when ready and return the promise
         var step = [[this.vShader, this.fShader].map(this.getter,glsl)];
@@ -69,17 +69,18 @@ ViaWebGL.prototype = {
     getter: function(where) {
         return new Promise(function(done){
             var bid = new XMLHttpRequest();
+            var given = {url: where, xhr: bid}
             // Return if not a valid filename
-            if (typeof this == 'function' && this(where,bid)) {
-                return done(where);
+            if (typeof this == 'function' && this(given)) {
+                return done(given.url);
             }
             var win = function(){
                 if (bid.status == 200) {
                     return done(bid.response);
                 }
-                return done(where);
+                return done(given.url);
             };
-            bid.open('GET', where, true);
+            bid.open('GET', given.url, true);
             bid.onerror = bid.onload = win;
             bid.send();
         }.bind(this));
