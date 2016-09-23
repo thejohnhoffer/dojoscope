@@ -48,8 +48,12 @@ ViaWebGL.prototype = {
         this.gl.canvas.width = this.width;
         this.gl.canvas.height = this.height;
         this.gl.viewport(0, 0, this.width, this.height);
+        // Return if not a valid filename
+        var glsl = function(where) {
+            return where.slice(-4) != 'glsl';
+        }
         // Load the shaders when ready and return the promise
-        var step = [[this.vShader, this.fShader].map(this.getter)];
+        var step = [[this.vShader, this.fShader].map(this.getter,glsl)];
         step.push(this.toProgram.bind(this), this.toBuffers.bind(this));
         return Promise.all(step[0]).then(step[1]).then(step[2]).then(this.ready);
 
@@ -64,11 +68,11 @@ ViaWebGL.prototype = {
     // Get a file as a promise
     getter: function(where) {
         return new Promise(function(done){
+            var bid = new XMLHttpRequest();
             // Return if not a valid filename
-            if (where.slice(-4) != 'glsl') {
+            if (typeof this == 'function' && this(where,bid)) {
                 return done(where);
             }
-            var bid = new XMLHttpRequest();
             var win = function(){
                 if (bid.status == 200) {
                     return done(bid.response);
@@ -78,7 +82,7 @@ ViaWebGL.prototype = {
             bid.open('GET', where, true);
             bid.onerror = bid.onload = win;
             bid.send();
-        });
+        }.bind(this));
     },
     // Link shaders from strings
     toProgram: function(files) {
@@ -183,7 +187,6 @@ ViaWebGL.prototype = {
         var output = this.tex.texImage2D.concat([tile]);
         if(tile instanceof Uint8Array) {
             output.splice(3,0,this.width,this.height,0);
-            log(output)
         }
         gl.texImage2D.apply(gl, output);
 

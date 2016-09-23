@@ -36,40 +36,28 @@ DOJO.Link.prototype = {
         if ('drawn' in e.tile) {
             return;
         }
-        e.tile.drawn = 1;
-//        var input = e.rendered.canvas;
         if(e.tiledImage.source.segmentation){
-            zip(e.tile.url,this.viaGL).then(function(result){
+            zip(this.viaGL, e.tile.url).then(function(result){
                 var input = e.rendered.canvas;
                 e.rendered.drawImage(result, 0, 0, input.width, input.height);
             });
         };
+        e.tile.drawn = 1;
     },
-    zip: function(url,viaGL){
+    zip: function(viaGL, url){
 
-        var getter = function(where) {
-            return new Promise(function(done){
-                var bid = new XMLHttpRequest();
-                var win = function(){
-                    if (bid.status == 200) {
-                        return done(bid.response);
-                    }
-                    return done(where);
-                };
-                bid.onerror = bid.onload = win;
-                bid.responseType = 'arraybuffer';
-                bid.open('GET', where, true);
-                bid.send();
-            });
+        var buffer = function(_,bid){
+             bid.responseType = 'arraybuffer';
+             return 0;
         }
-
-        var unzipper = function(blob){
+        var unzip = function(blob){
             var compressed = new Zlib.Inflate(new Uint8Array(blob));
             return compressed.decompress();
         }
-
-        return getter(url).then(unzipper).then(function(raw){
+        var filter = function(raw){
             return viaGL.toCanvas(raw);
-        }.bind(this));
+        }
+
+        return viaGL.getter.call(buffer,url).then(unzip).then(filter);
     }
 }
