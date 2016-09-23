@@ -22,7 +22,7 @@ DOJO.Link.prototype = {
 
         // Add WebGL Drawing and Layer Buttons
         this.buttons.map(seaGL.button, this.input);
-        seaGL.addHandler('tile-drawing',this.drawing.bind(seaGL,this.zip));
+        seaGL.addHandler('tile-drawing',this.drawing.bind(seaGL,this.unzip));
         this.openSD.addHandler('update-level',this.input.leveler.bind(this.input));
         seaGL.init();
     },
@@ -32,17 +32,17 @@ DOJO.Link.prototype = {
             onClick: this.input.waiter.bind(this.input,name)
         }
     },
-    drawing: function(zip, callback, e) {
+    drawing: function(unzip, callback, e) {
         if ('drawn' in e.tile) {
             return;
         }
         if(e.tiledImage.source.segmentation){
             callback = callback.bind(this,e);
-            zip.call(this, callback, e);
+            unzip.call(this, callback, e);
         };
         e.tile.drawn = 1;
     },
-    zip: function(callback, e){
+    unzip: function(callback, e){
 
         var viaGL = this.viaGL;
         var buffer = function(_,bid){
