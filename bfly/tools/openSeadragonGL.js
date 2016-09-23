@@ -5,20 +5,12 @@ openSeadragonGL = function(openSD) {
 
     /* OpenSeaDragon API calls
     ~*~*~*~*~*~*~*~*~*~*~*~*/
-    this.interface = {
-        'tile-loaded': function(e) {
-            // Set the imageSource as a data URL and then complete
-            var output = this.viaGL.toCanvas(e.image);
-            e.image.onload = e.getCompletionCallback();
-            e.image.src = output.toDataURL();
-        },
-        'tile-drawing': function(e,raw) {
+    this.interface = function(e,raw) {
             // Render a webGL canvas to an input canvas
-            var input = e.rendered.canvas;
+            var input = e.tile.context2D.canvas;
             var output = this.viaGL.toCanvas(raw || input);
-            e.rendered.drawImage(output, 0, 0, input.width, input.height);
-        }
-    };
+            e.tile.context2D.drawImage(output, 0, 0, input.width, input.height);
+    }
     this.defaults = {
         'tile-loaded': function(callback, e) {
             callback(e);
@@ -65,7 +57,7 @@ openSeadragonGL.prototype = {
     adder: function(e) {
         for (var key of this.and(this.defaults)) {
             var handler = this[key].bind(this);
-            var interface = this.interface[key].bind(this);
+            var interface = this.interface.bind(this);
             // Add all openSeadragon event handlers
             this.openSD.addHandler(key, function(e) {
                 handler.call(this, interface, e);

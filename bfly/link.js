@@ -37,6 +37,7 @@ DOJO.Link.prototype = {
             return;
         }
         if(e.tiledImage.source.segmentation){
+            callback = callback.bind(this,e);
             zip.call(this, callback, e);
         };
         e.tile.drawn = 1;
@@ -53,6 +54,6 @@ DOJO.Link.prototype = {
             return compressed.decompress();
         }
 
-        viaGL.getter.call(buffer,e.tile.url).then(unzip).then(callback.bind(this,e));
+        viaGL.getter.call(buffer,e.tile.url).then(unzip).then(callback);
     }
 }
