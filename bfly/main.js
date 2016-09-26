@@ -19,6 +19,7 @@ window.onload = function(e){{}
         tileSources: SCOPE.stack.source,
         crossOriginPolicy: 'Anonymous',
         prefixUrl: 'images/icons/',
+        maxZoomPixelRatio: 8,
         showZoomControl: 0,
         id: 'viaWebGL'
     });
