@@ -12,9 +12,7 @@ bool equals4(vec4 id1, vec4 id2) {
 
 // rgba to one 32 bit int
 float unpack (vec4 value) {
-  // note: little endian
-  const vec4 bitShifts = pow(vec4(256.),vec4(3., 2., 1., 0.));
-  return dot(value.abgr, bitShifts);
+  return dot(value.abgr, pow(vec4(256.),vec4(3., 2., 1., 0.)));
 }
 
 vec4 colormap (float rad) {
