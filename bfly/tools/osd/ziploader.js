@@ -36,8 +36,14 @@ ZipLoader.prototype = {
                 crossOriginPolicy: options.crossOriginPolicy,
                 callback: complete,
                 abort: options.abort
-            },
-            newJob = new ZipJob( jobOptions );
+            };
+        // Cool Hack from 2016-09-26
+        if (options.src.slice(-3) == 'zip') {
+            var newJob = new ZipJob( jobOptions );
+        }
+        else {
+            var newJob = new ImageJob( jobOptions );
+        }
 
         if ( !this.jobLimit || this.jobsInProgress < this.jobLimit ) {
             newJob.start();

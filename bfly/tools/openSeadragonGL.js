@@ -5,20 +5,27 @@ openSeadragonGL = function(openSD) {
 
     /* OpenSeaDragon API calls
     ~*~*~*~*~*~*~*~*~*~*~*~*/
-    this.interface = function(e,raw) {
+    this.interface = {
+        'tile-loaded': function(e) {
+            // Set the imageSource as a data URL and then complete
+            var output = this.viaGL.toCanvas(e.image);
+            e.image.onload = e.getCompletionCallback();
+            e.image.src = output.toDataURL();
+        },
+        'tile-drawing': function(e) {
             // Render a webGL canvas to an input canvas
-            var input = e.tile.context2D.canvas;
-            var output = this.viaGL.toCanvas(raw || input);
-            e.tile.context2D.drawImage(output, 0, 0, input.width, input.height);
-    }
+            var input = e.rendered.canvas;
+            e.rendered.drawImage(this.viaGL.toCanvas(input), 0, 0, input.width, input.height);
+        }
+    };
     this.defaults = {
         'tile-loaded': function(callback, e) {
             callback(e);
         },
         'tile-drawing': function(callback, e) {
-            if (!('drawn' in e.tile)) {
-                callback(e);
+            if (!e.tile.drawn) {
                 e.tile.drawn = 1;
+                callback(e);
             }
         }
     };
@@ -57,7 +64,7 @@ openSeadragonGL.prototype = {
     adder: function(e) {
         for (var key of this.and(this.defaults)) {
             var handler = this[key].bind(this);
-            var interface = this.interface.bind(this);
+            var interface = this.interface[key].bind(this);
             // Add all openSeadragon event handlers
             this.openSD.addHandler(key, function(e) {
                 handler.call(this, interface, e);
@@ -88,6 +95,7 @@ openSeadragonGL.prototype = {
     },
     // Switch Shaders on or off
     shade: function() {
+
         this.viaGL.on++;
         this.openSD.world.resetItems();
     }
