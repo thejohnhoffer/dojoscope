@@ -12,6 +12,8 @@ var log = function(x,n) {
 //-----------------------------------
 window.onload = function(e){{}
 
+    OpenSeadragon.prototype.ImageLoader = ZipLoader;
+
     // preset tile source
     SCOPE.stack  = SCOPE.parse(DOJO.Stack);
     // Open a seadragon with two layers
