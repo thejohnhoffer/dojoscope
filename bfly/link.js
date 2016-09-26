@@ -22,7 +22,7 @@ DOJO.Link.prototype = {
 
         // Add WebGL Drawing and Layer Buttons
         this.buttons.map(seaGL.button, this.input);
-        seaGL.addHandler('tile-drawing',this.drawing.bind(seaGL,this.unzip));
+//        seaGL.addHandler('tile-drawing',this.drawing.bind(seaGL,this.unzip));
         this.openSD.addHandler('update-level',this.input.leveler.bind(this.input));
         seaGL.init();
     },

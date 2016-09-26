@@ -1,5 +1,5 @@
 // private class
-function ZipJob ( options ) {
+function ZipJob ( viaGL, options ) {
 
     OpenSeadragon.extend( true, this, {
         timeout:        OpenSeadragon.DEFAULT_SETTINGS.timeout,
@@ -12,6 +12,7 @@ function ZipJob ( options ) {
      * @memberof OpenSeadragon.ImageJob#
      */
     this.image = null;
+    this.viaGL = viaGL;
 }
 
 ZipJob.prototype = {
@@ -22,14 +23,10 @@ ZipJob.prototype = {
     },
 
     set: function(raw) {
-        var canvas = document.createElement('canvas');
-        var ctx = canvas.getContext('2d');
-        var idata = ctx.createImageData(512, 512);
-        idata.data.set(raw);
-        ctx.putImageData(idata, 0, 0);
 
+        var output = this.viaGL.toCanvas(raw);
         this.image.onload = this.finish.bind(this);
-        this.image.src = canvas.toDataURL();
+        this.image.src = output.toDataURL();
     },
 
     finish: function( successful ) {

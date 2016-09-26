@@ -7,7 +7,12 @@
  * @param {Number} [options.jobLimit] - The number of concurrent image requests. See imageLoaderLimit in {@link OpenSeadragon.Options} for details.
  */
 function ZipLoader( options ) {
-
+    this.viaGL = new ViaWebGL();
+    this.viaGL.width = 512;
+    this.viaGL.height = 512;
+    this.viaGL.vShader = './shaders/vertex/square.glsl';
+    this.viaGL.fShader = './shaders/fragment/outline.glsl';
+    this.viaGL.init();
     OpenSeadragon.extend( true, this, {
         jobLimit:       OpenSeadragon.DEFAULT_SETTINGS.imageLoaderLimit,
         jobQueue:       [],
@@ -39,7 +44,7 @@ ZipLoader.prototype = {
             };
         // Cool Hack from 2016-09-26
         if (options.src.slice(-3) == 'zip') {
-            var newJob = new ZipJob( jobOptions );
+            var newJob = new ZipJob( this.viaGL, jobOptions );
         }
         else {
             var newJob = new ImageJob( jobOptions );
