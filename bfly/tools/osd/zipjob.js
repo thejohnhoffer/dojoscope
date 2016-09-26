@@ -19,6 +19,8 @@ ZipJob.prototype = {
     start: function(){
         var _this = this;
 
+        log(this.src)
+
         this.image = new Image();
 
         if ( this.crossOriginPolicy !== false ) {

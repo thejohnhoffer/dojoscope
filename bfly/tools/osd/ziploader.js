@@ -27,6 +27,7 @@ ZipLoader.prototype = {
      * @param {Function} callback - Called once image has been downloaded.
      */
     addJob: function( options ) {
+
         var _this = this,
             complete = function( job ) {
                 completeJob( _this, job, options.callback );

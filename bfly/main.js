@@ -12,7 +12,7 @@ var log = function(x,n) {
 //-----------------------------------
 window.onload = function(e){{}
 
-    OpenSeadragon.prototype.ImageLoader = ZipLoader;
+    OpenSeadragon.ImageLoader = ZipLoader;
 
     // preset tile source
     SCOPE.stack  = SCOPE.parse(DOJO.Stack);
