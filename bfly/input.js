@@ -1,7 +1,7 @@
 //-----------------------------------
 //
 // J.Input - Let people control slices
-// -- Called by DOJO.link
+// -- Called by main.js
 //-----------------------------------
 
 DOJO.Input = function(scope) {
@@ -28,7 +28,6 @@ DOJO.Input = function(scope) {
         var zLevel = offset + w.getItemAt(w.getItemCount()-1).source.z;
         scope.stack.make(zLevel, index).map(scope.openSD.addTiledImage,scope.openSD);
     }
-
     this.waiter = function(event) {
         var it = w.getItemAt(this.index[event].slice(-1));
         var z = Math.max(this.openSD.viewport.getZoom(),1);
@@ -41,6 +40,12 @@ DOJO.Input = function(scope) {
     }
     this.keychain['38'] = this.waiter.bind(this,'up');
     this.keychain['40'] = this.waiter.bind(this,'down');
+
+    var buttons = ['up','down'].map(this.button, this);
+    buttons.map(openSeadragonGL.prototype.button, this);
+    this.openSD.addViewerInputHook({
+        keyDownHandler: this.key.bind(this)
+    });
 }
 
 DOJO.Input.prototype = {
@@ -54,7 +59,6 @@ DOJO.Input.prototype = {
         }
     },
     up: function(){
-        this.log()
         this.show(this.index.up);
         this.lose(this.index.start);
         this.gain(this.zBuff - 1, this.index.end);
@@ -69,5 +73,11 @@ DOJO.Input.prototype = {
             log(i.source.z);
         });
         log(' ');
+    },
+    button: function(name) {
+        return {
+            name: name,
+            onClick: this.waiter.bind(this,name)
+        }
     }
 }
