@@ -23,7 +23,7 @@ DOJO.Input = function(scope) {
         });
         from.map(w.getItemAt,w).map(function(fromItem,i){
             w.setItemIndex(fromItem, to[i]);
-        },this);
+        });
     }
     this.lose = function(lost){
         lost.map(w.getItemAt,w).map(w.removeItem,w);
@@ -35,12 +35,8 @@ DOJO.Input = function(scope) {
 
     this.waiter = function(event) {
         var it = w.getItemAt(this.index[event].slice(-1));
-        if (!('waiting' in this) || this.waiting == it.source.z){
-            if (it.lastDrawn.length && it.lastDrawn[0].level >= this.level) {
-                return this[event]();
-            }
-            it.waiting = this.waiter.bind(this,event);
-            this.waiting = it.source.z;
+        if (it.lastDrawn.length && it.lastDrawn[0].level >= this.level) {
+            return this[event]();
         }
     }
     this.keychain['39'] = this.waiter.bind(this,'up');
@@ -58,24 +54,19 @@ DOJO.Input.prototype = {
         }
     },
     up: function(){
-        this.log();
         this.swap(this.index.up);
-        this.log();
         this.lose(this.index.start);
-        this.log();
-        this.gain(this.zBuff, this.index.end);
+        this.gain(this.zBuff - 1, this.index.end);
     },
     down: function(){
-        this.log();
         this.swap(this.index.down);
         this.lose(this.index.end);
-        this.gain(-this.zBuff, this.index.start);
+        this.gain(1 - this.zBuff, this.index.start);
     },
     leveler: function(e){
       this.level = e.level;
     },
     log: function() {
-//        console.clear();
         this.openSD.world._items.map(function(i){
             log(i.source.z);
         });
