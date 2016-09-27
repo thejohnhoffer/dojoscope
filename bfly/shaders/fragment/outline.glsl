@@ -38,15 +38,13 @@ vec4 offset(sampler2D sam, vec2 pos, vec2 off) {
 vec4 borders(sampler2D sam, vec2 pos) {
   // calculate the color of sampler at an offset from position
   vec4 here_id = offset(sam,pos,vec2(0., 0.));
-
-  bool left = equals4(here_id, offset(sam,pos,vec2(-1., 0.)));
-  bool right = equals4(here_id, offset(sam,pos,vec2(1., 0.)));
-  bool down = equals4(here_id, offset(sam,pos,vec2(0., -1.)));
-  bool top = equals4(here_id, offset(sam,pos,vec2(0., 1.)));
-
-  // If any are false, return false TODO: optimize
-  if (!left || !right || !down || !top) {
-    return vec4(0.,0.,0.,1.);
+  vec4 off = vec4(-1,1,0,0);
+  // Borders if any corner out
+  for (int n = 0; n < 4; n++){
+      vec4 corner = offset(sam, pos, vec2(off[n],off[3-n]));
+      if(!equals4(here_id, corner)){
+          return vec4(0.,0.,0.,1.);
+      }
   }
   return colormap(unpack(here_id));
 }
