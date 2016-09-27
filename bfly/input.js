@@ -35,7 +35,7 @@ DOJO.Input = function(scope) {
 
     this.waiter = function(event) {
         var it = w.getItemAt(this.index[event].slice(-1));
-        if (it.lastDrawn.length && it.lastDrawn[0].level >= this.level) {
+        if (it && it.lastDrawn.length && it.lastDrawn[0].level >= this.level) {
             return this[event]();
         }
     }
