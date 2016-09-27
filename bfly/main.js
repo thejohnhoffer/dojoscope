@@ -12,6 +12,8 @@ var log = function(x,n) {
 //-----------------------------------
 window.onload = function(e){{}
 
+    OpenSeadragon.ImageLoader = ZipLoader;
+
     // preset tile source
     SCOPE.stack  = SCOPE.parse(DOJO.Stack);
     // Open a seadragon with two layers
@@ -19,6 +21,7 @@ window.onload = function(e){{}
         tileSources: SCOPE.stack.source,
         crossOriginPolicy: 'Anonymous',
         prefixUrl: 'images/icons/',
+        maxZoomPixelRatio: 8,
         showZoomControl: 0,
         id: 'viaWebGL'
     });

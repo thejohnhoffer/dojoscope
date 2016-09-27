@@ -13,7 +13,7 @@ DOJO.Source = function(src_terms){
         this.maxLevel = Math.ceil(Math.log2(maxLevel));
         // Get the segmentation string for butterfly
         if (this.segmentation) {
-            this.seg = '&segmentation=y&segcolor=y';
+            this.seg = '&segmentation=y&output=zip';
         }
         return {tileSource: this.share(this, {})};
     }

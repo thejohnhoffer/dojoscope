@@ -36,7 +36,7 @@ DOJO.Stack.prototype = {
             src: {}
         },
         {
-            set: {opacity: .4},
+            set: {opacity: .6},
             src: {segmentation: true}
         }
     ],

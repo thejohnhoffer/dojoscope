@@ -43,11 +43,20 @@ DOJO.Input = function(scope) {
             this.waiting = it.source.z;
         }
     }
+    this.keychain['39'] = this.waiter.bind(this,'up');
+    this.keychain['37'] = this.waiter.bind(this,'down');
 }
 
 DOJO.Input.prototype = {
     level: 0,
     keychain: {},
+    key: function(e){
+        var pressed = e.keyCode;
+        if (e.shift && pressed in this.keychain) {
+            e.preventDefaultAction = true;
+            this.keychain[pressed]();
+        }
+    },
     up: function(){
         this.log();
         this.swap(this.index.up);

@@ -23,8 +23,8 @@ openSeadragonGL = function(openSD) {
             callback(e);
         },
         'tile-drawing': function(callback, e) {
-            if (e.tile.loaded !==1) {
-                e.tile.loaded = 1;
+            if (!e.tile.drawn) {
+                e.tile.drawn = 1;
                 callback(e);
             }
         }

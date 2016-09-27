@@ -48,8 +48,12 @@ ViaWebGL.prototype = {
         this.gl.canvas.width = this.width;
         this.gl.canvas.height = this.height;
         this.gl.viewport(0, 0, this.width, this.height);
+        // Return if not a valid filename
+        var glsl = function(given) {
+            return given.url.slice(-4) != 'glsl';
+        }
         // Load the shaders when ready and return the promise
-        var step = [[this.vShader, this.fShader].map(this.getter)];
+        var step = [[this.vShader, this.fShader].map(this.getter,glsl)];
         step.push(this.toProgram.bind(this), this.toBuffers.bind(this));
         return Promise.all(step[0]).then(step[1]).then(step[2]).then(this.ready);
 
@@ -64,21 +68,22 @@ ViaWebGL.prototype = {
     // Get a file as a promise
     getter: function(where) {
         return new Promise(function(done){
-            // Return if not a valid filename
-            if (where.slice(-4) != 'glsl') {
-                return done(where);
-            }
             var bid = new XMLHttpRequest();
+            var given = {url: where, xhr: bid}
+            // Return if not a valid filename
+            if (typeof this == 'function' && this(given)) {
+                return done(given.url);
+            }
             var win = function(){
                 if (bid.status == 200) {
                     return done(bid.response);
                 }
-                return done(where);
+                return done(given.url);
             };
-            bid.open('GET', where, true);
+            bid.open('GET', given.url, true);
             bid.onerror = bid.onload = win;
             bid.send();
-        });
+        }.bind(this));
     },
     // Link shaders from strings
     toProgram: function(files) {
@@ -181,6 +186,9 @@ ViaWebGL.prototype = {
         });
         // Send the tile into the texture.
         var output = this.tex.texImage2D.concat([tile]);
+        if(tile instanceof Uint8Array) {
+            output.splice(3,0,this.width,this.height,0);
+        }
         gl.texImage2D.apply(gl, output);
 
         // Draw everything needed to canvas
