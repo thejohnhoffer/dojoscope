@@ -9,17 +9,14 @@ DOJO.Link = function(scope) {
 
     this.openSD = scope.openSD;
     this.input = new DOJO.Input(scope);
-
+    var buttons = ['up','down'].map(this.linkButtons,this);
+    buttons.map(openSeadragonGL.prototype.button, this.input);
     this.openSD.addViewerInputHook({
         keyDownHandler: this.input.key.bind(this.input)
     });
 }
 DOJO.Link.prototype = {
 
-    init: function(){
-        this.buttons = ['up','down'].map(this.linkButtons,this);
-        this.buttons.map(openSeadragonGL.prototype.button, this.input);
-    },
     linkButtons: function(name) {
         return {
             name: name,

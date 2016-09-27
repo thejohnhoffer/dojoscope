@@ -26,7 +26,7 @@ window.onload = function(e){{}
         id: 'viaWebGL'
     });
     // Link everything to WebGL
-    SCOPE.link = new DOJO.Link(SCOPE).init();
+    SCOPE.link = new DOJO.Link(SCOPE);
 };
 
 // Change any preset terms set in input address
