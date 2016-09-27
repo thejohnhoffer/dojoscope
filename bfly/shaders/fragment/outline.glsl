@@ -16,7 +16,7 @@ float unpack (vec4 value) {
 }
 
 vec4 colormap (float rad) {
-  vec4 answer = vec4(1.);
+  vec4 answer = vec4(0.3);
   for (int n = 0; n < 3; n++) {
       float k = pow(2.,float(8+n));
       answer[n] = (1. + sin(k*rad))/2.;
@@ -48,7 +48,6 @@ vec4 borders() {
   }
   return colormap(unpack(here_id));
 }
-
 
 void main() {
   gl_FragColor = borders();
