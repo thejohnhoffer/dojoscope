@@ -9,15 +9,10 @@ DOJO.Input = function(scope) {
     var w = scope.openSD.world;
     this.openSD = scope.openSD;
     this.zBuff = scope.stack.zBuff;
-    this.maxLevel = scope.stack.source[0].tileSource.maxLevel;
+    this.index = scope.stack.index;
     this.total = scope.stack.source.length;
+    this.maxLevel = scope.stack.source[0].tileSource.maxLevel;
 
-    this.index = {
-        start: scope.stack.index[0],
-        up: scope.stack.index[1],
-        down: scope.stack.index[2],
-        end: scope.stack.index[3],
-    };
     this.swap = function(to){
         var from = this.index.end;
         to.map(w.getItemAt,w).map(function(topItem){
