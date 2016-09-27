@@ -13,13 +13,12 @@ DOJO.Input = function(scope) {
     this.total = scope.stack.source.length;
     this.maxLevel = scope.stack.source[0].tileSource.maxLevel;
 
-    this.swap = function(to){
-        var from = this.index.end;
-        to.map(w.getItemAt,w).map(function(topItem){
-            w.setItemIndex(topItem, w.getItemCount()-1);
+    this.show = function(shown){
+        shown.map(w.getItemAt,w).map(function(shownItem){
+            w.setItemIndex(shownItem, w.getItemCount()-1);
         });
-        from.map(w.getItemAt,w).map(function(fromItem,i){
-            w.setItemIndex(fromItem, to[i]);
+        this.index.end.map(w.getItemAt,w).map(function(lastItem,i){
+            w.setItemIndex(lastItem, shown[i]);
         });
     }
     this.lose = function(lost){
@@ -55,12 +54,13 @@ DOJO.Input.prototype = {
         }
     },
     up: function(){
-        this.swap(this.index.up);
+        this.log()
+        this.show(this.index.up);
         this.lose(this.index.start);
         this.gain(this.zBuff - 1, this.index.end);
     },
     down: function(){
-        this.swap(this.index.down);
+        this.show(this.index.down);
         this.lose(this.index.end);
         this.gain(1 - this.zBuff, this.index.start);
     },
