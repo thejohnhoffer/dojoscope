@@ -9,6 +9,8 @@ DOJO.Input = function(scope) {
     var w = scope.openSD.world;
     this.openSD = scope.openSD;
     this.zBuff = scope.stack.zBuff;
+    this.maxLevel = scope.stack.source[0].tileSource.maxLevel;
+    this.total = scope.stack.source.length;
 
     this.index = {
         start: scope.stack.index[0],
@@ -35,18 +37,22 @@ DOJO.Input = function(scope) {
 
     this.waiter = function(event) {
         var it = w.getItemAt(this.index[event].slice(-1));
-        if (it && it.lastDrawn.length && it.lastDrawn[0].level >= this.level) {
-            return this[event]();
+        var z = Math.max(this.openSD.viewport.getZoom(),1);
+        var level = Math.min(Math.ceil(Math.log(z)/Math.LN2),this.maxLevel);
+        if (it && it.lastDrawn.length && it.lastDrawn[0].level >= level) {
+            if (this.total == w.getItemCount()) {
+                return this[event]();
+            }
         }
     }
-    this.keychain['39'] = this.waiter.bind(this,'up');
-    this.keychain['37'] = this.waiter.bind(this,'down');
+    this.keychain['38'] = this.waiter.bind(this,'up');
+    this.keychain['40'] = this.waiter.bind(this,'down');
 }
 
 DOJO.Input.prototype = {
-    level: 0,
     keychain: {},
     key: function(e){
+        e.shift = !e.shift;
         var pressed = e.keyCode;
         if (e.shift && pressed in this.keychain) {
             e.preventDefaultAction = true;
@@ -62,9 +68,6 @@ DOJO.Input.prototype = {
         this.swap(this.index.down);
         this.lose(this.index.end);
         this.gain(1 - this.zBuff, this.index.start);
-    },
-    leveler: function(e){
-      this.level = e.level;
     },
     log: function() {
         this.openSD.world._items.map(function(i){
