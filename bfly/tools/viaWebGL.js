@@ -123,7 +123,7 @@ ViaWebGL.prototype = {
 
         // Get uniform term
         var tile_size = gl.getUniformLocation(program, this.tile_size);
-        gl.uniform2f(tile_size, gl.canvas.height, gl.canvas.width);
+        gl.uniform2f(tile_size, 1/gl.canvas.height, 1/gl.canvas.width);
 
         // Get attribute terms
         this.att = [this.pos, this.tile_pos].map(function(name, number) {

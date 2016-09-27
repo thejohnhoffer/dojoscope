@@ -27,29 +27,29 @@ vec4 colormap (float rad) {
 //
 // calculate the color of sampler at an offset from position
 //
-vec4 offset(sampler2D sam, vec2 pos, vec2 off) {
+vec4 offset(vec2 off) {
   // calculate the color of sampler at an offset from position
-  return texture2D(sam, vec2(pos.x + off.x/u_tile_size.x, pos.y + off.y/u_tile_size.y));
+  return texture2D(u_tile, v_tile_pos + off*u_tile_size);
 }
 
 //
 // Check whether nearby positions are the same
 //
-vec4 borders(sampler2D sam, vec2 pos) {
-  // calculate the color of sampler at an offset from position
-  vec4 here_id = offset(sam,pos,vec2(0., 0.));
-  vec4 off = vec4(-1,1,0,0);
-  // Borders if any corner out
+vec4 borders() {
+  float even = 1.0;
+  vec4 here_id = offset(vec2(0, 0));
+  // Borders if any corner not shared
   for (int n = 0; n < 4; n++){
-      vec4 corner = offset(sam, pos, vec2(off[n],off[3-n]));
-      if(!equals4(here_id, corner)){
+      vec2 square = vec2(!(n > 1),(n > 1))*even;
+      if(!equals4(here_id, offset(square))){
           return vec4(0.,0.,0.,1.);
       }
+      even *= -1.0;
   }
   return colormap(unpack(here_id));
 }
 
 
 void main() {
-  gl_FragColor = borders(u_tile, v_tile_pos);
+  gl_FragColor = borders();
 }
