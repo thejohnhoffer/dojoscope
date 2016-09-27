@@ -43,16 +43,18 @@ DOJO.Input = function(scope) {
             }
         }
     }
-    this.keychain.ArrowUp = this.waiter.bind(this,'up');
-    this.keychain.ArrowDown = this.waiter.bind(this,'down');
+    this.keychain['39'] = this.waiter.bind(this,'up');
+    this.keychain['37'] = this.waiter.bind(this,'down');
 }
 
 DOJO.Input.prototype = {
     level: 0,
     keychain: {},
     key: function(e){
-        if (e.key in this.keychain) {
-            this.keychain[e.key]();
+        var pressed = e.keyCode;
+        if (e.shift && pressed in this.keychain) {
+            e.preventDefaultAction = true;
+            this.keychain[pressed]();
         }
     },
     up: function(){
