@@ -8,6 +8,7 @@ DOJO.Input = function(scope) {
 
     var w = scope.openSD.world;
     this.openSD = scope.openSD;
+    this.share = scope.stack.share;
     this.zBuff = scope.stack.zBuff;
     this.index = scope.stack.index;
     this.total = scope.stack.source.length;
@@ -28,11 +29,15 @@ DOJO.Input = function(scope) {
         var zLevel = offset + w.getItemAt(w.getItemCount()-1).source.z;
         scope.stack.make(zLevel, index).map(scope.openSD.addTiledImage,scope.openSD);
     }
+    this.check = function(z,level,slice){
+        slice.minZoomImageRatio = z;
+        return (slice && slice.lastDrawn.length && slice.lastDrawn[0].level >= level);
+    }
     this.waiter = function(event) {
-        var it = w.getItemAt(this.index[event].slice(-1));
+        var slice = this.index[event].map(w.getItemAt,w);
         var z = Math.max(this.openSD.viewport.getZoom(),1);
-        var level = Math.min(Math.ceil(Math.log(z)/Math.LN2),this.maxLevel);
-        if (it && it.lastDrawn.length && it.lastDrawn[0].level >= level) {
+        var level = Math.min(Math.floor(Math.log(z)/Math.LN2),this.maxLevel);
+        if (slice.every(this.check.bind(0,z,level))) {
             if (this.total == w.getItemCount()) {
                 return this[event]();
             }

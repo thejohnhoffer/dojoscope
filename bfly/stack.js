@@ -26,7 +26,7 @@ DOJO.Stack = function(src_terms){
 }
 
 DOJO.Stack.prototype = {
-    zBuff: 2,
+    zBuff: 3,
     first: 0,
     preset: [
         {
@@ -38,7 +38,7 @@ DOJO.Stack.prototype = {
             src: {segmentation: true}
         }
     ],
-    share: DOJO.Source().share,
+    share: DOJO.Source().share.bind(null),
     sourcer: function(zLevel, indices, layer, i){
         var source = new DOJO.Source(this.share(layer.src, {z:zLevel}));
         return this.share(this.share(layer.set, {index:indices[i]}), source);
