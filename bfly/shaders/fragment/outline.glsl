@@ -16,8 +16,7 @@ int unpack (vec4 value) {
   return id.x + 256*id.y + 65536*id.z + 16777216*id.w;
 }
 
-vec4 hsv2rgb(float h, float s, float v, float a) {
-  vec3 c = vec3(h,s,v);
+vec4 hsv2rgb(vec3 c, float a) {
   vec4 K = vec4(1., 2./3., 1./3., 3.);
   vec3 p = abs(fract(c.xxx + K.xyz) * 6. - K.www);
   vec3 done = c.z * mix(K.xxx, clamp(p - K.xxx, 0., 1.), c.y);
@@ -25,11 +24,16 @@ vec4 hsv2rgb(float h, float s, float v, float a) {
 }
 
 vec4 colormap (vec4 val) {
-  int id = unpack(val)*180;
-  float k = 13./19.;
-  float rad = radians(float(id));
-  float hue = abs(sin(rad*k));
-  return hsv2rgb(hue,0.5,0.8,1.);
+  int id = unpack(val);
+  float rad = radians(float(id*180));
+  vec3 phase = vec3(-2.1,0,2.1);
+  vec3 maxs = vec3(1, 1,.9);
+  vec3 mins = vec3(0,.8,.3);
+
+  vec3 fracs = rad*vec3(129.,129.,129.)/vec3(1031.,1019.,1009.);
+  vec3 ratios = abs(sin(fracs+phase));
+  vec3 hsv = clamp(ratios,mins,maxs);
+  return hsv2rgb(hsv,1.);
 }
 
 //
