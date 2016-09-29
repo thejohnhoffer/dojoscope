@@ -23,16 +23,20 @@ vec4 hsv2rgb(vec3 c, float a) {
   return vec4(done,a);
 }
 
+vec3 spike(vec3 id, vec3 k) {
+    vec3 step = mod(id, k.x)/k.x + mod(id, k.y)/k.y + mod(id, k.z)/k.z;
+    return mod(step,1.5)/1.5;
+}
+
 vec4 colormap (vec4 val) {
-  int id = unpack(val);
-  float rad = radians(float(id*180));
-  vec3 phase = vec3(-2.1,0,2.1);
+  vec3 k = vec3(1./97.,1./47.,1.);
+  float offset = dot(k,vec3(1./3.));
+  vec3 off = vec3(0, offset, -offset);
+  vec3 id = vec3(val.x)+off;
   vec3 maxs = vec3(1, 1,.9);
   vec3 mins = vec3(0,.8,.3);
 
-  vec3 fracs = rad*vec3(129.,129.,129.)/vec3(1031.,1019.,1009.);
-  vec3 ratios = abs(sin(fracs+phase));
-  vec3 hsv = clamp(ratios,mins,maxs);
+  vec3 hsv = clamp(spike(id,k),mins,maxs);
   return hsv2rgb(hsv,1.);
 }
 
