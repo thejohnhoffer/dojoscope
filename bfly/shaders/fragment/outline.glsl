@@ -29,15 +29,11 @@ vec3 spike(vec3 id, vec3 k) {
 }
 
 vec4 colormap (vec4 val) {
-  vec3 k = vec3(1./97.,1./47.,1.);
+  vec3 id = vec3(val.x);
+  vec3 k = vec3(1./100.,1./50.,1.);
   float offset = dot(k,vec3(1./3.));
   vec3 off = vec3(0, offset, -offset);
-  vec3 id = vec3(val.x)+off;
-  vec3 maxs = vec3(1, 1,.9);
-  vec3 mins = vec3(0,.8,.3);
-
-  vec3 hsv = clamp(spike(id,k),mins,maxs);
-  return hsv2rgb(hsv,1.);
+  return vec4(spike(id+off,k),1.);
 }
 
 //
