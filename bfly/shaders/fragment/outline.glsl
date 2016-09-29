@@ -12,22 +12,24 @@ bool equals4(vec4 id1, vec4 id2) {
 
 // rgba to one 32 bit int
 int unpack (vec4 value) {
-  return int(value.a) +  int(value.b)*256 + int(value.g)*256*256 + int(value.r)*256*256*256;
+  ivec4 id = ivec4(value*255.);
+  return id.x + 256*id.y + 65536*id.z + 16777216*id.w;
 }
 
-vec3 hsv2rgb(vec3 c) {
-//  return c;
-  vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-  vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-  return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+vec4 hsv2rgb(float h, float s, float v, float a) {
+  vec3 c = vec3(h,s,v);
+  vec4 K = vec4(1., 2./3., 1./3., 3.);
+  vec3 p = abs(fract(c.xxx + K.xyz) * 6. - K.www);
+  vec3 done = c.z * mix(K.xxx, clamp(p - K.xxx, 0., 1.), c.y);
+  return vec4(done,a);
 }
 
 vec4 colormap (vec4 val) {
-  float k = 180.;
-  float ival = float(int(val.x));
-  float rad = radians(ival);
-  float hue = (1.+sin(rad*k))/2.;
-  return vec4(hue,hue,hue,1);
+  int id = unpack(val)*180;
+  float k = 13./19.;
+  float rad = radians(float(id));
+  float hue = abs(sin(rad*k));
+  return hsv2rgb(hue,0.5,0.8,1.);
 }
 
 //
@@ -42,15 +44,14 @@ vec4 offset(vec2 off) {
 // Check whether nearby positions are the same
 //
 vec4 borders() {
-  float even = 1.0;
   vec4 here_id = offset(vec2(0, 0));
   // Borders if any corner not shared
   for (int n = 0; n < 4; n++){
+      float even = mod(float(n),2.);
       vec2 square = vec2(!(n > 1),(n > 1))*even;
       if(!equals4(here_id, offset(square))){
           return vec4(0.,0.,0.,1.);
       }
-      even *= -1.0;
   }
   return colormap(here_id);
 }
