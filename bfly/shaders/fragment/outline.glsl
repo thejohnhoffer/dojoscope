@@ -11,17 +11,23 @@ bool equals4(vec4 id1, vec4 id2) {
 }
 
 // rgba to one 32 bit int
-float unpack (vec4 value) {
-  return dot(value.abgr, pow(vec4(256.),vec4(3., 2., 1., 0.)));
+int unpack (vec4 value) {
+  return int(value.a) +  int(value.b)*256 + int(value.g)*256*256 + int(value.r)*256*256*256;
 }
 
-vec4 colormap (float rad) {
-  vec4 answer = vec4(0.3);
-  for (int n = 0; n < 3; n++) {
-      float k = pow(2.,float(8+n));
-      answer[n] = (1. + sin(k*rad))/2.;
-  }
-  return answer;
+vec3 hsv2rgb(vec3 c) {
+//  return c;
+  vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+  vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+  return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+}
+
+vec4 colormap (vec4 val) {
+  float k = 180.;
+  float ival = float(int(val.x));
+  float rad = radians(ival);
+  float hue = (1.+sin(rad*k))/2.;
+  return vec4(hue,hue,hue,1);
 }
 
 //
@@ -46,7 +52,7 @@ vec4 borders() {
       }
       even *= -1.0;
   }
-  return colormap(unpack(here_id));
+  return colormap(here_id);
 }
 
 void main() {
