@@ -23,17 +23,18 @@ vec4 hsv2rgb(vec3 c, float a) {
   return vec4(done,a);
 }
 
-vec3 spike(vec3 id, vec3 k) {
-    vec3 step = mod(id, k.x)/k.x + mod(id, k.y)/k.y + mod(id, k.z)/k.z;
-    return mod(step,1.5)/1.5;
+vec3 spike(float id) {
+    vec3 star = pow(vec3(3,7,2),vec3(-1)) + pow(vec3(10),vec3(-2,-3,-2));
+    vec3 step = fract(id*star);
+    step.z = mix(0.2,0.9,step.z);
+    step.y = mix(0.6,1.0,step.y);
+    step.x = 1.-step.x;
+    return step;
 }
 
-vec4 colormap (vec4 val) {
-  vec3 id = vec3(val.x);
-  vec3 k = vec3(1./100.,1./50.,1.);
-  float offset = dot(k,vec3(1./3.));
-  vec3 off = vec3(0, offset, -offset);
-  return vec4(spike(id+off,k),1.);
+vec4 colormap (int id) {
+  vec3 hsv = spike(float(id));
+  return hsv2rgb(hsv,1.);
 }
 
 //
@@ -57,7 +58,7 @@ vec4 borders() {
           return vec4(0.,0.,0.,1.);
       }
   }
-  return colormap(here_id);
+  return colormap(unpack(here_id));
 }
 
 void main() {
