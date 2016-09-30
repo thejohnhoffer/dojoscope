@@ -23,21 +23,20 @@ vec4 hsv2rgb(vec3 c, float a) {
   return vec4(done,a);
 }
 
-vec3 spike(vec3 id, vec3 k) {
-    vec3 step = mod(id, k.x)/k.x + mod(id, k.y)/k.y + mod(id, k.z)/k.z;
-    return mod(step,1.5)/1.5;
-}
+
 
 vec4 colormap (vec4 val) {
-  vec3 k = vec3(1./97.,1./47.,1.);
-  float offset = dot(k,vec3(1./3.));
-  vec3 off = vec3(0, offset, -offset);
-  vec3 id = vec3(val.x)+off;
-  vec3 maxs = vec3(1, 1,.9);
-  vec3 mins = vec3(0,.8,.3);
 
-  vec3 hsv = clamp(spike(id,k),mins,maxs);
-  return hsv2rgb(hsv,1.);
+  int n = 1;
+  int tot = 6000;
+  int did = unpack(val);
+  vec3 lo = vec3(0,0,0);
+  vec3 hi = vec3(1,1,0);
+  vec3 done = vec3(1);
+  if (did < tot){
+      done = mix(lo,hi,float(did)/float(tot));
+  }
+  return vec4(done,1);
 }
 
 //
@@ -54,14 +53,15 @@ vec4 offset(vec2 off) {
 vec4 borders() {
   vec4 here_id = offset(vec2(0, 0));
   // Borders if any corner not shared
-  for (int n = 0; n < 4; n++){
-      float even = mod(float(n),2.);
-      vec2 square = vec2(!(n > 1),(n > 1))*even;
-      if(!equals4(here_id, offset(square))){
-          return vec4(0.,0.,0.,1.);
+  for (int n = 0; n < 10; n++){
+      vec2 square = vec2(n, 0);
+      vec4 winning = offset(square);
+      if(!equals4(here_id,winning)){
+          return colormap(abs(winning-here_id));
       }
   }
-  return colormap(here_id);
+
+  return vec4(1,1,1,1);
 }
 
 void main() {
