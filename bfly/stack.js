@@ -40,7 +40,18 @@ DOJO.Stack.prototype = {
     ],
     init: function(osd){
         var w = osd.world;
-
+        this.event = function(event){
+            return this.index[event].map(w.getItemAt, w);
+        }
+        this.level = function(){
+            var z = Math.max(osd.viewport.getZoom(),1);
+            var maxLevel = this.source[0].tileSource.maxLevel;
+            return Math.min(Math.floor(Math.log(z)/Math.LN2), maxLevel);
+        }
+        this.minLevel = function(item){
+            item.tileSource.minLevel = this.level();
+            return item;
+        }
         this.show = function(shown){
             shown.map(w.getItemAt,w).map(function(shownItem){
                 w.setItemIndex(shownItem, w.getItemCount()-1);
@@ -54,15 +65,7 @@ DOJO.Stack.prototype = {
         }
         this.gain = function(offset, index){
             var zLevel = offset + w.getItemAt(w.getItemCount()-1).source.z;
-            this.make(zLevel, index).map(osd.addTiledImage,osd);
-        }
-        this.event = function(event){
-            return this.index[event].map(w.getItemAt, w);
-        }
-        this.level = function(){
-            var z = Math.max(osd.viewport.getZoom(),1);
-            var maxLevel = this.source[0].tileSource.maxLevel;
-            return Math.min(Math.floor(Math.log(z)/Math.LN2), maxLevel);
+            this.make(zLevel, index).map(this.minLevel,this).map(osd.addTiledImage,osd);
         }
         return this;
     },

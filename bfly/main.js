@@ -7,7 +7,7 @@ var log = function(x,n) {
 //-----------------------------------
 //
 // http://<host>:<port>/index.html?server=<...>&datapath=<...>
-// Calls DOJO.Stack + DOJO.Link
+// Calls DOJO.Stack + DOJO.Input
 // -- Called first
 //-----------------------------------
 window.onload = function(e){{}
