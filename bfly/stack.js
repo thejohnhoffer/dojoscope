@@ -38,6 +38,33 @@ DOJO.Stack.prototype = {
             src: {segmentation: true}
         }
     ],
+    init: function(osd){
+        var w = osd.world;
+
+        this.show = function(shown){
+            shown.map(w.getItemAt,w).map(function(shownItem){
+                w.setItemIndex(shownItem, w.getItemCount()-1);
+            });
+            this.index.end.map(w.getItemAt,w).map(function(lastItem,i){
+                w.setItemIndex(lastItem, shown[i]);
+            });
+        }
+        this.lose = function(lost){
+            lost.map(w.getItemAt,w).map(w.removeItem,w);
+        }
+        this.gain = function(offset, index){
+            var zLevel = offset + w.getItemAt(w.getItemCount()-1).source.z;
+            this.make(zLevel, index).map(osd.addTiledImage,osd);
+        }
+        this.event = function(event){
+            return this.index[event].map(w.getItemAt, w);
+        }
+        this.level = function(z){
+            var maxLevel = this.source[0].tileSource.maxLevel;
+            return Math.min(Math.floor(Math.log(z)/Math.LN2), maxLevel);
+        }
+        return this;
+    },
     share: DOJO.Source().share.bind(null),
     sourcer: function(zLevel, indices, layer, i){
         var source = new DOJO.Source(this.share(layer.src, {z:zLevel}));
