@@ -1,6 +1,7 @@
 //-----------------------------------
 //
-// J.Input - Let people control slices
+// DOJO.Input - Let people control slices
+// Calls DOJO.RealTime
 // -- Called by main.js
 //-----------------------------------
 
@@ -11,10 +12,10 @@ DOJO.Input = function(scope) {
     var seaGL = new openSeadragonGL(this.osd);
 
     var toolbar = ['up','down'].map(this.button, this);
-    var keychain = toolbar.reduce(this.chain,{});
+    var keychain = this.key.bind(toolbar.reduce(this.chain,{}));
     toolbar.map(seaGL.button, seaGL);
     this.osd.addViewerInputHook({
-        keyDownHandler: this.key.bind(keychain)
+        keyDown: keychain
     });
 }
 
@@ -38,10 +39,9 @@ DOJO.Input.prototype = {
         }
     },
     button: function(name) {
-        return {
-            name: name,
-            onClick: this.event.bind(this,name)
-        }
+        var obj = {name:name};
+        obj.onClick = this.event.bind(this,name);
+        return obj;
     },
     chain: function(o,b,i){
         var key = [38,40][i];

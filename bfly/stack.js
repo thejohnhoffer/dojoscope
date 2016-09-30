@@ -46,7 +46,7 @@ DOJO.Stack.prototype = {
         this.level = function(){
             var z = Math.max(osd.viewport.getZoom(),1);
             var maxLevel = this.source[0].tileSource.maxLevel;
-            return Math.min(Math.floor(Math.log(z)/Math.LN2), maxLevel);
+            return Math.min(Math.ceil(Math.log(z)/Math.LN2), maxLevel);
         }
         this.minLevel = function(item){
             item.tileSource.minLevel = this.level();

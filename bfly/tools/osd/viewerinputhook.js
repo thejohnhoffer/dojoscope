@@ -55,10 +55,10 @@
             return event.stopBubbling ? false : ret;
         };
 
-        if (options.keyDownHandler) {
+        if (options.keyDown) {
             var keyDownHandler = tracker.keyDownHandler;
             tracker.keyDownHandler = function (event) {
-                return callHandlers(options.keyDownHandler, keyDownHandler, event);
+                return callHandlers(options.keyDown, keyDownHandler, event);
             };
         }
     };
