@@ -9,18 +9,19 @@ DOJO.Input = function(scope) {
 
     this.osd = scope.openSD;
     this.stack = scope.stack.init(this.osd);
-    var seaGL = new openSeadragonGL(this.osd);
-
-    var toolbar = ['up','down'].map(this.button, this);
-    var keychain = this.key.bind(toolbar.reduce(this.chain,{}));
-    toolbar.map(seaGL.button, seaGL);
-    this.osd.addViewerInputHook({
-        keyDown: keychain
-    });
+    this.seaGL = new openSeadragonGL(this.osd);
+    this.realT = new DOJO.RealTime(this.seaGL);
+    this.realT.init().then(this.init.bind(this));
 }
 
 DOJO.Input.prototype = {
 
+    init: function(){
+        var toolbar = ['up','down'].map(this.button, this);
+        var keychain = this.key.bind(toolbar.reduce(this.chain,{}));
+        this.osd.addViewerInputHook({ keyDown: keychain });
+        toolbar.map(this.seaGL.button, this.seaGL);
+    },
     key: function(e){
         e.shift = !e.shift;
         var keychain = this;

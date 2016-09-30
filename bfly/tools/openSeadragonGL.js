@@ -36,9 +36,14 @@ openSeadragonGL = function(openSD) {
 openSeadragonGL.prototype = {
     // Map to viaWebGL and openSeadragon
     init: function() {
-        var open = this.merger.bind(this);
-        this.openSD.addHandler('open',open);
-        return this;
+        var open = this.open.bind(this);
+        return new Promise(open);
+    },
+    open: function(done) {
+        var merge = this.merger.bind(this);
+        this.openSD.addHandler('open',function(e){
+            merge(e).then(done);
+        });
     },
     // User adds events
     addHandler: function(key,custom) {
@@ -58,7 +63,8 @@ openSeadragonGL.prototype = {
         for (var key of this.and(this.viaGL)) {
             this.viaGL[key] = this[key];
         }
-        this.viaGL.init().then(this.adder.bind(this));
+        var join = this.adder.bind(this);
+        return this.viaGL.init().then(join);
     },
     // Add all seadragon properties
     adder: function(e) {
