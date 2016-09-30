@@ -59,7 +59,8 @@ DOJO.Stack.prototype = {
         this.event = function(event){
             return this.index[event].map(w.getItemAt, w);
         }
-        this.level = function(z){
+        this.level = function(){
+            var z = Math.max(this.osd.viewport.getZoom(),1);
             var maxLevel = this.source[0].tileSource.maxLevel;
             return Math.min(Math.floor(Math.log(z)/Math.LN2), maxLevel);
         }

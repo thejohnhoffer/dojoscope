@@ -47,9 +47,7 @@ DOJO.Input.prototype = {
         }
     },
     check: function(slice){
-        var z = Math.max(this.osd.viewport.getZoom(),1);
-        var level = this.stack.level(z);
-        slice.minZoomImageRatio = z;
+        var level = this.stack.level();
         if (slice && slice.lastDrawn.length) {
             return slice.lastDrawn[0].level >= level;
         }
