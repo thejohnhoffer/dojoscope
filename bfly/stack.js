@@ -19,8 +19,8 @@ DOJO.Stack = function(src_terms){
     var addRange = this.addRange.bind(this, nLayers);
 
     // Prepare the sources
-    DOJO.Source(src_terms);
     keys.push(keys.splice(zBuff-1, 1)[0]);
+    this.protoSource = new DOJO.Source(src_terms);
     this.source = keys.map(addFirst).reduce(join,[]);
     this.index = index.map(timesLayers).map(addRange).reduce(arrows,{});
 }
@@ -69,9 +69,9 @@ DOJO.Stack.prototype = {
         }
         return this;
     },
-    share: DOJO.Source().share.bind(null),
+    share: DOJO.Source.prototype.share.bind(null),
     sourcer: function(zLevel, indices, layer, i){
-        var source = new DOJO.Source(this.share(layer.src, {z:zLevel}));
+        var source = this.protoSource.init(this.share(layer.src, {z:zLevel}));
         return this.share(this.share(layer.set, {index:indices[i]}), source);
     },
     make: function(zLevel, indices) {
