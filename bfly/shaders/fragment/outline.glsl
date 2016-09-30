@@ -33,7 +33,7 @@ vec3 spike(float id) {
 
 vec4 colormap (int id) {
   vec3 hsv = spike(float(id));
-  return hsv2rgb(hsv,.8);
+  return hsv2rgb(hsv,.6);
 }
 
 //

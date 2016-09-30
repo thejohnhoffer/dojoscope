@@ -29,15 +29,15 @@ DOJO.Input = function(scope) {
         var zLevel = offset + w.getItemAt(w.getItemCount()-1).source.z;
         scope.stack.make(zLevel, index).map(scope.openSD.addTiledImage,scope.openSD);
     }
-    this.check = function(z,level,slice){
+    this.check = function(z,slice){
         slice.minZoomImageRatio = z;
+        var level = Math.min(Math.floor(Math.log(z)/Math.LN2),this.maxLevel);
         return (slice && slice.lastDrawn.length && slice.lastDrawn[0].level >= level);
     }
     this.waiter = function(event) {
         var slice = this.index[event].map(w.getItemAt,w);
         var z = Math.max(this.openSD.viewport.getZoom(),1);
-        var level = Math.min(Math.floor(Math.log(z)/Math.LN2),this.maxLevel);
-        if (slice.every(this.check.bind(0,z,level))) {
+        if (slice.every(this.check.bind(this,z))) {
             if (this.total == w.getItemCount()) {
                 return this[event]();
             }
