@@ -28,13 +28,12 @@ vec3 spike(float id) {
     vec3 step = fract(id*star);
     step.z = mix(0.2,0.9,step.z);
     step.y = mix(0.6,1.0,step.y);
-    step.x = 1.-step.x;
     return step;
 }
 
 vec4 colormap (int id) {
   vec3 hsv = spike(float(id));
-  return hsv2rgb(hsv,1.);
+  return hsv2rgb(hsv,.8);
 }
 
 //
