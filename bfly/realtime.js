@@ -17,10 +17,6 @@ DOJO.RealTime = function(osd) {
 
 DOJO.RealTime.prototype = {
     init: function(){
-        var handles = this.handles.bind(this);
-        return this.seaGL.init().then(handles);
-    },
-    handles: function(){
-        log('handle animation');
+        return this.seaGL.init();
     }
 }

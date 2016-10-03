@@ -56,19 +56,15 @@ DOJO.Stack.prototype = {
                 w.setItemIndex(lastItem, shown[i]);
             });
         }
-        this.level = function(){
-            var z = Math.max(osd.viewport.getZoom(),1);
-            var maxLevel = this.source[0].tileSource.maxLevel;
-            return Math.min(Math.ceil(Math.log(z)/Math.LN2), maxLevel);
-        }
-        this.minLevel = function(item){
-            item.tileSource.minLevel = this.level();
+        this.minLeveler = function(item){
+            item.tileSource.minLevel = this.level;
             return item;
         }
         this.gain = function(offset, index){
             var zLevel = offset + w.getItemAt(w.getItemCount()-1).source.z;
-            this.make(zLevel, index).map(this.minLevel,this).map(osd.addTiledImage,osd);
+            this.make(zLevel, index).map(this.minLeveler,this).map(osd.addTiledImage,osd);
         }
+        this.w = w;
         return this;
     },
     share: DOJO.Source.prototype.share.bind(null),
@@ -97,5 +93,19 @@ DOJO.Stack.prototype = {
     },
     times: function(that) {
         return this * that;
-    }
+    },
+    zoomer: function(e){
+        var z = Math.max(e.zoom,1);
+        var maxLevel = this.source[0].tileSource.maxLevel;
+        var minLevel = Math.min(Math.ceil(Math.log(z)/Math.LN2), maxLevel);
+        if (this.level > minLevel){
+            log('from '+ this.level +' to '+ minLevel)
+            for (it in new Uint8Array(this.w.getItemCount())){
+                var image = this.w.getItemAt(it);
+                image.source.minLevel = 0;
+            }
+        }
+        this.level = minLevel;
+    },
+    level: 0
 };

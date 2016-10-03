@@ -23,6 +23,7 @@ DOJO.Input.prototype = {
         var seaGL = this.realT.seaGL;
         var toolbar = ['up','down'].map(this.button, this);
         var keychain = this.key.bind(toolbar.reduce(this.chain,{}));
+        this.osd.addHandler('zoom',this.stack.zoomer.bind(this.stack));
         this.osd.addViewerInputHook({ keyDown: keychain });
         toolbar.map(seaGL.button, seaGL);
     },
@@ -64,7 +65,7 @@ DOJO.Input.prototype = {
         stack.gain(1 - stack.zBuff, stack.index.start);
     },
     check: function(slice){
-        var level = this.stack.level();
+        var level = this.stack.level;
         if (slice && slice.lastDrawn.length) {
             return slice.lastDrawn[0].level >= level;
         }
