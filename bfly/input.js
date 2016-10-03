@@ -1,26 +1,30 @@
 //-----------------------------------
 //
 // DOJO.Input - Let people control slices
-// Calls DOJO.RealTime
+// gets OpenSeadragon
+// gets DOJO.Stack
+// new DOJO.RealTime
+//     DOJO.RealTime.init
 // -- Called by main.js
+// -- Init by self
 //-----------------------------------
 
 DOJO.Input = function(scope) {
 
     this.osd = scope.openSD;
-    this.stack = scope.stack.init(this.osd);
-    this.seaGL = new openSeadragonGL(this.osd);
-    this.realT = new DOJO.RealTime(this.seaGL);
+    this.stack = scope.stack;
+    this.realT = new DOJO.RealTime(this.osd);
     this.realT.init().then(this.init.bind(this));
 }
 
 DOJO.Input.prototype = {
 
     init: function(){
+        var seaGL = this.realT.seaGL;
         var toolbar = ['up','down'].map(this.button, this);
         var keychain = this.key.bind(toolbar.reduce(this.chain,{}));
         this.osd.addViewerInputHook({ keyDown: keychain });
-        toolbar.map(this.seaGL.button, this.seaGL);
+        toolbar.map(seaGL.button, seaGL);
     },
     key: function(e){
         e.shift = !e.shift;

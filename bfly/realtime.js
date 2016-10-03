@@ -1,15 +1,18 @@
 //-----------------------------------
 //
 // DOJO.RealTime - WebGL Annimation
-// Calls DOJO.RealTime
-// -- Called by main.js
+// gets OpenSeadragon
+// new openSeadragonGL
+//     openSeadragonGL.init
+// -- Made by DOJO.Input
+// -- Init by DOJO.Input
 //-----------------------------------
 
 
-DOJO.RealTime = function(seaGL) {
-    seaGL.vShader = './shaders/vertex/square.glsl';
-    seaGL.fShader = './shaders/fragment/outline.glsl';
-    this.seaGL = seaGL;
+DOJO.RealTime = function(osd) {
+    this.seaGL = new openSeadragonGL(osd);
+    this.seaGL.vShader = './shaders/vertex/square.glsl';
+    this.seaGL.fShader = './shaders/fragment/outline.glsl';
 }
 
 DOJO.RealTime.prototype = {
@@ -18,6 +21,6 @@ DOJO.RealTime.prototype = {
         return this.seaGL.init().then(handles);
     },
     handles: function(){
-        log('callback hell');
+        log('handle animation');
     }
 }

@@ -1,8 +1,10 @@
 //-----------------------------------
 //
 // DOJO.Stack: Stack some tileSources
-// Calls DOJO.Source
-// -- Called by main.js
+// New DOJO.Source
+//     DOJO.Source.init
+// -- Made by main.js
+// -- Init by main.js
 //-----------------------------------
 
 DOJO.Stack = function(src_terms){

@@ -1,7 +1,7 @@
 //-----------------------------------
 //
 // DOJO.Source: makes tileSources
-// -- Called by DOJO.Stack
+// -- Made & Init by DOJO.Stack
 //-----------------------------------
 
 DOJO.Source = function(src_terms){

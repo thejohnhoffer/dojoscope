@@ -7,7 +7,10 @@ var log = function(x,n) {
 //-----------------------------------
 //
 // http://<host>:<port>/index.html?server=<...>&datapath=<...>
-// Calls DOJO.Stack + DOJO.Input
+// New DOJO.Stack
+//     DOJO.Stack.init
+// New OpenSeadragon
+// New DOJO.Input
 // -- Called first
 //-----------------------------------
 window.onload = function(e){{}
@@ -15,7 +18,7 @@ window.onload = function(e){{}
     OpenSeadragon.ImageLoader = ZipLoader;
 
     // preset tile source
-    SCOPE.stack  = SCOPE.parse(DOJO.Stack);
+    SCOPE.stack  = new DOJO.Stack(SCOPE.parse());
     // Open a seadragon with two layers
     SCOPE.openSD = OpenSeadragon({
         tileSources: SCOPE.stack.source,
@@ -26,6 +29,7 @@ window.onload = function(e){{}
         id: 'viaWebGL'
     });
     // Link everything to WebGL
+    SCOPE.stack.init(SCOPE.openSD);
     SCOPE.link = new DOJO.Input(SCOPE);
 };
 
@@ -44,5 +48,5 @@ SCOPE.parse = function(maker) {
             default: return output[key] = true;
         }
     });
-    return new maker(output);
+    return output;
 };
