@@ -11,19 +11,19 @@ DOJO.Stack = function(src_terms){
 
     // Setup
     var zBuff = this.zBuff;
-    var first = 1+this.now-zBuff;
+    var first = this.now-zBuff;
     var nLayers = this.preset.length;
-    var keys = this.range(2*zBuff-1);
+    var keys = this.range(2*zBuff+1);
     var arrows = this.arrows.bind(this);
     var addFirst = this.add.bind(first);
     var join = this.join.bind(this,nLayers);
     var timesLayers = this.times.bind(nLayers);
-    var index = [0, zBuff-1, zBuff-2, 2*zBuff-3];
+    var index = [0, zBuff, zBuff-1, 2*zBuff-1];
     index = [].slice.call(new Uint8ClampedArray(index));
     var addRange = this.addRange.bind(this, nLayers);
 
     // Prepare the sources
-    keys.push(keys.splice(zBuff-1, 1)[0]);
+    keys.push(keys.splice(zBuff, 1)[0]);
     this.protoSource = new DOJO.Source(src_terms);
     this.source = keys.map(addFirst).reduce(join,[]);
     this.index = index.map(timesLayers).map(addRange).reduce(arrows,{});
