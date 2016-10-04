@@ -11,13 +11,15 @@ DOJO.Stack = function(src_terms){
 
     // Setup
     var zBuff = this.zBuff;
+    var first = 1+this.now-zBuff;
     var nLayers = this.preset.length;
     var keys = this.range(2*zBuff-1);
     var arrows = this.arrows.bind(this);
+    var addFirst = this.add.bind(first);
     var join = this.join.bind(this,nLayers);
-    var addFirst = this.add.bind(this.first);
     var timesLayers = this.times.bind(nLayers);
     var index = [0, zBuff-1, zBuff-2, 2*zBuff-3];
+    index = [].slice.call(new Uint8ClampedArray(index));
     var addRange = this.addRange.bind(this, nLayers);
 
     // Prepare the sources
@@ -25,12 +27,11 @@ DOJO.Stack = function(src_terms){
     this.protoSource = new DOJO.Source(src_terms);
     this.source = keys.map(addFirst).reduce(join,[]);
     this.index = index.map(timesLayers).map(addRange).reduce(arrows,{});
-//    log(this.source);
 }
 
 DOJO.Stack.prototype = {
-    zBuff: 2,
-    first: 0,
+    now: 0,
+    zBuff1,
     preset: [
         {
             set: {},
@@ -49,6 +50,9 @@ DOJO.Stack.prototype = {
         this.lose = function(lost){
             lost.map(w.getItemAt,w).map(w.removeItem,w);
         }
+        this.gain = function(offset, index){
+            this.make(offset+this.now, index).map(osd.addTiledImage,osd);
+        }
         this.show = function(shown){
             shown.map(w.getItemAt,w).map(function(shownItem){
                 w.setItemIndex(shownItem, w.getItemCount()-1);
@@ -56,10 +60,6 @@ DOJO.Stack.prototype = {
             this.index.end.map(w.getItemAt,w).map(function(lastItem,i){
                 w.setItemIndex(lastItem, shown[i]);
             });
-        }
-        this.gain = function(offset, index){
-            var zLevel = offset + w.getItemAt(w.getItemCount()-1).source.z;
-            this.make(zLevel, index).map(osd.addTiledImage,osd);
         }
         this.w = w;
         return this;

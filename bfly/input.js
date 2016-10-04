@@ -54,11 +54,13 @@ DOJO.Input.prototype = {
         return o;
     },
     up: function(stack){
+        stack.now ++;
         stack.show(stack.index.up);
         stack.lose(stack.index.start);
         stack.gain(stack.zBuff - 1, stack.index.end);
     },
     down: function(stack){
+        stack.now --;
         stack.show(stack.index.down);
         stack.lose(stack.index.end);
         stack.gain(1 - stack.zBuff, stack.index.start);
