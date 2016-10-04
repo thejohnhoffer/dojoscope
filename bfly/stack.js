@@ -25,6 +25,7 @@ DOJO.Stack = function(src_terms){
     this.protoSource = new DOJO.Source(src_terms);
     this.source = keys.map(addFirst).reduce(join,[]);
     this.index = index.map(timesLayers).map(addRange).reduce(arrows,{});
+//    log(this.source);
 }
 
 DOJO.Stack.prototype = {
@@ -93,6 +94,7 @@ DOJO.Stack.prototype = {
     },
     refresher: function(e){
         e.item.addHandler('fully-loaded-change',function(e){
+            log('hi')
             if(e.fullyLoaded){
                 e.eventSource.source.minLevel = 0;
                 e.eventSource.draw();
