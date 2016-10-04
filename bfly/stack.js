@@ -56,20 +56,17 @@ DOJO.Stack.prototype = {
                 w.setItemIndex(lastItem, shown[i]);
             });
         }
-        this.minLeveler = function(item){
-            item.tileSource.minLevel = this.level;
-            return item;
-        }
         this.gain = function(offset, index){
             var zLevel = offset + w.getItemAt(w.getItemCount()-1).source.z;
-            this.make(zLevel, index).map(this.minLeveler,this).map(osd.addTiledImage,osd);
+            this.make(zLevel, index).map(osd.addTiledImage,osd);
         }
         this.w = w;
         return this;
     },
     share: DOJO.Source.prototype.share.bind(null),
     sourcer: function(zLevel, indices, layer, i){
-        var source = this.protoSource.init(this.share(layer.src, {z:zLevel}));
+        var src = {z:zLevel,minLevel:this.level};
+        var source = this.protoSource.init(this.share(layer.src, src));
         return this.share(this.share(layer.set, {index:indices[i]}), source);
     },
     make: function(zLevel, indices) {
@@ -94,17 +91,18 @@ DOJO.Stack.prototype = {
     times: function(that) {
         return this * that;
     },
+    refresher: function(e){
+        e.item.addHandler('fully-loaded-change',function(e){
+            if(e.fullyLoaded){
+                e.eventSource.source.minLevel = 0;
+                e.eventSource.draw();
+            }
+        });
+    },
     zoomer: function(e){
         var z = Math.max(e.zoom,1);
         var maxLevel = this.source[0].tileSource.maxLevel;
-        var minLevel = Math.min(Math.ceil(Math.log(z)/Math.LN2), maxLevel);
-        if (this.level > minLevel){
-            for (it in new Uint8Array(this.w.getItemCount())) {
-                var image = this.w.getItemAt(it);
-                image.source.minLevel = 0;
-            }
-        }
-        this.level = minLevel;
+        this.level = Math.min(Math.ceil(Math.log(z)/Math.LN2), maxLevel);
     },
     level: 0
 };

@@ -24,6 +24,7 @@ DOJO.Input.prototype = {
         var toolbar = ['up','down'].map(this.button, this);
         var keychain = this.key.bind(toolbar.reduce(this.chain,{}));
         this.osd.addHandler('zoom',this.stack.zoomer.bind(this.stack));
+        this.osd.world.addHandler('add-item', this.stack.refresher.bind(this.stack));
         this.osd.addViewerInputHook({ keyDown: keychain });
         toolbar.map(seaGL.button, seaGL);
     },
