@@ -30,6 +30,7 @@ DOJO.Stack = function(src_terms){
     this.protoSource = new DOJO.Source(src_terms);
     this.source = keys.map(addFirst).reduce(join,[]);
     this.index = index.map(timesLayers).map(addRange).reduce(arrows,{});
+    this.total = nLayers*keys;
 }
 
 DOJO.Stack.prototype = {
