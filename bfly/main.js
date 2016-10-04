@@ -24,6 +24,7 @@ window.onload = function(e){{}
         tileSources: SCOPE.stack.source,
         crossOriginPolicy: 'Anonymous',
         prefixUrl: 'images/icons/',
+        minZoomImageRatio: .2,
         maxZoomPixelRatio: 8,
         showZoomControl: 0,
         id: 'viaWebGL'
