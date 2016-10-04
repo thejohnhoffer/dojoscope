@@ -12,6 +12,9 @@ DOJO.Stack = function(src_terms){
     // Setup
     var zBuff = this.zBuff;
     var first = this.now-zBuff;
+    var which = 1;
+
+    this.preset.splice(which,1);
     var nLayers = this.preset.length;
     var keys = this.range(2*zBuff+1);
     var arrows = this.arrows.bind(this);
