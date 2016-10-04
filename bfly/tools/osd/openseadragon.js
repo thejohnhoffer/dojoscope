@@ -1,6 +1,6 @@
 //! openseadragon 2.2.1
-//! Built on 2016-06-21
-//! Git commit: v2.2.1-0-babdefd
+//! Built on 2016-10-04
+//! Git commit: v2.2.1-60-254b426
 //! http://openseadragon.github.io
 //! License: http://openseadragon.github.io/license/
 
@@ -691,18 +691,9 @@
   * @param {OpenSeadragon.Options} options - Viewer options.
   * @returns {OpenSeadragon.Viewer}
   */
-window.OpenSeadragon = window.OpenSeadragon || function( options ){
-
+function OpenSeadragon( options ){
     return new OpenSeadragon.Viewer( options );
-
-};
-
-if (typeof define === 'function' && define.amd) {
-   define(function () {
-       return (window.OpenSeadragon);
-   });
 }
-
 
 (function( $ ){
 
@@ -2125,12 +2116,13 @@ if (typeof define === 'function' && define.amd) {
                 }
             };
 
-            if (withCredentials) {
-                request.withCredentials = true;
-            }
-
             try {
                 request.open( "GET", url, true );
+
+                if (withCredentials) {
+                    request.withCredentials = true;
+                }
+
                 request.send( null );
             } catch (e) {
                 var msg = e.message;
@@ -2601,6 +2593,23 @@ if (typeof define === 'function' && define.amd) {
     }
 
 }(OpenSeadragon));
+
+
+// Universal Module Definition, supports CommonJS, AMD and simple script tag
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // expose as amd module
+        define([], factory);
+    } else if (typeof module === 'object' && module.exports) {
+        // expose as commonjs module
+        module.exports = factory();
+    } else {
+        // expose as window.OpenSeadragon
+        root.OpenSeadragon = factory();
+    }
+}(this, function () {
+    return OpenSeadragon;
+}));
 
 /*
  * OpenSeadragon - full-screen support functions
@@ -8036,6 +8045,8 @@ $.extend( $.Viewer.prototype, $.EventSource.prototype, $.ControlDock.prototype, 
      * browsers that support the HTML5 canvas.
      * @param {Number} [options.opacity] Opacity the tiled image should be drawn at by default.
      * @param {String} [options.compositeOperation] How the image is composited onto other images.
+     * @param {String} [options.crossOriginPolicy] The crossOriginPolicy for this specific image,
+     * overriding viewer.crossOriginPolicy.
      * @param {Function} [options.success] A function that gets called when the image is
      * successfully added. It's passed the event object which contains a single property:
      * "item", the resulting TiledImage.
@@ -8070,6 +8081,9 @@ $.extend( $.Viewer.prototype, $.EventSource.prototype, $.ControlDock.prototype, 
         }
         if (options.compositeOperation === undefined) {
             options.compositeOperation = this.compositeOperation;
+        }
+        if (options.crossOriginPolicy === undefined) {
+            options.crossOriginPolicy = options.tileSource.crossOriginPolicy !== undefined ? options.tileSource.crossOriginPolicy : this.crossOriginPolicy;
         }
 
         var myQueueItem = {
@@ -8133,7 +8147,7 @@ $.extend( $.Viewer.prototype, $.EventSource.prototype, $.ControlDock.prototype, 
 
         this._loadQueue.push(myQueueItem);
 
-        getTileSourceImplementation( this, options.tileSource, function( tileSource ) {
+        getTileSourceImplementation( this, options.tileSource, options, function( tileSource ) {
 
             myQueueItem.tileSource = tileSource;
 
@@ -8183,7 +8197,7 @@ $.extend( $.Viewer.prototype, $.EventSource.prototype, $.ControlDock.prototype, 
                     minPixelRatio: _this.minPixelRatio,
                     smoothTileEdgesMinZoom: _this.smoothTileEdgesMinZoom,
                     iOSDevice: _this.iOSDevice,
-                    crossOriginPolicy: _this.crossOriginPolicy,
+                    crossOriginPolicy: queueItem.options.crossOriginPolicy,
                     debugMode: _this.debugMode
                 });
 
@@ -8548,7 +8562,7 @@ $.extend( $.Viewer.prototype, $.EventSource.prototype, $.ControlDock.prototype, 
                 if( this.toolbar ){
                     this.toolbar.addControl(
                         this.navControl,
-                        {anchor: $.ControlAnchor.TOP_LEFT}
+                        {anchor: this.navigationControlAnchor || $.ControlAnchor.TOP_LEFT}
                     );
                 } else {
                     this.addControl(
@@ -8917,15 +8931,17 @@ function _getSafeElemSize (oElement) {
  * @function
  * @private
  */
-function getTileSourceImplementation( viewer, tileSource, successCallback,
+function getTileSourceImplementation( viewer, tileSource, imgOptions, successCallback,
     failCallback ) {
     var _this = viewer;
 
     //allow plain xml strings or json strings to be parsed here
     if ( $.type( tileSource ) == 'string' ) {
-        if ( tileSource.match( /\s*<.*/ ) ) {
+        //xml should start with "<" and end with ">"
+        if ( tileSource.match( /^\s*<.*>\s*$/ ) ) {
             tileSource = $.parseXml( tileSource );
-        } else if ( tileSource.match( /\s*[\{\[].*/ ) ) {
+        //json should start with "{" or "[" and end with "}" or "]"
+        } else if ( tileSource.match(/^\s*[\{\[].*[\}\]]\s*$/ ) ) {
             tileSource = $.parseJSON(tileSource);
         }
     }
@@ -8951,7 +8967,8 @@ function getTileSourceImplementation( viewer, tileSource, successCallback,
             //If its still a string it means it must be a url at this point
             tileSource = new $.TileSource({
                 url: tileSource,
-                crossOriginPolicy: viewer.crossOriginPolicy,
+                crossOriginPolicy: imgOptions.crossOriginPolicy !== undefined ?
+                    imgOptions.crossOriginPolicy : viewer.crossOriginPolicy,
                 ajaxWithCredentials: viewer.ajaxWithCredentials,
                 useCanvas: viewer.useCanvas,
                 success: function( event ) {
@@ -8963,8 +8980,10 @@ function getTileSourceImplementation( viewer, tileSource, successCallback,
             } );
 
         } else if ($.isPlainObject(tileSource) || tileSource.nodeType) {
-            if (!tileSource.crossOriginPolicy && viewer.crossOriginPolicy) {
-                tileSource.crossOriginPolicy = viewer.crossOriginPolicy;
+            if (tileSource.crossOriginPolicy === undefined &&
+                (imgOptions.crossOriginPolicy !== undefined || viewer.crossOriginPolicy !== undefined)) {
+                tileSource.crossOriginPolicy = imgOptions.crossOriginPolicy !== undefined ?
+                    imgOptions.crossOriginPolicy : viewer.crossOriginPolicy;
             }
             if (tileSource.ajaxWithCredentials === undefined) {
                 tileSource.ajaxWithCredentials = viewer.ajaxWithCredentials;
@@ -11246,11 +11265,11 @@ $.TileSource.prototype = {
      * @param {OpenSeadragon.Point} point
      */
     getTileAtPoint: function( level, point ) {
-        var pixel = point.times( this.dimensions.x ).times( this.getLevelScale(level) ),
-            tx = Math.floor( pixel.x / this.getTileWidth(level) ),
-            ty = Math.floor( pixel.y / this.getTileHeight(level) );
-
-        return new $.Point( tx, ty );
+        var numTiles = this.getNumTiles( level );
+        return new $.Point(
+            Math.floor( (point.x * numTiles.x) / 1 ),
+            Math.floor( (point.y * numTiles.y * this.dimensions.x) / this.dimensions.y )
+        );
     },
 
     /**
@@ -11749,10 +11768,10 @@ $.extend( $.DziTileSource.prototype, $.TileSource.prototype, /** @lends OpenSead
             xMax = xMin + rect.width * scale;
             yMax = yMin + rect.height * scale;
 
-            xMin = Math.floor( xMin / this.tileSize );
-            yMin = Math.floor( yMin / this.tileSize );
-            xMax = Math.ceil( xMax / this.tileSize );
-            yMax = Math.ceil( yMax / this.tileSize );
+            xMin = Math.floor( xMin / this._tileWidth );
+            yMin = Math.floor( yMin / this._tileWidth ); // DZI tiles are square, so we just use _tileWidth
+            xMax = Math.ceil( xMax / this._tileWidth );
+            yMax = Math.ceil( yMax / this._tileWidth );
 
             if ( xMin <= x && x < xMax && yMin <= y && y < yMax ) {
                 return true;
@@ -12664,6 +12683,149 @@ $.extend( $.TmsTileSource.prototype, $.TileSource.prototype, /** @lends OpenSead
 
 }( OpenSeadragon ));
 
+(function($) {
+
+    /**
+     * @class ZoomifyTileSource
+     * @classdesc A tilesource implementation for the zoomify format.
+     *
+     * A description of the format can be found here:
+     * https://ecommons.cornell.edu/bitstream/handle/1813/5410/Introducing_Zoomify_Image.pdf
+     *
+     * There are two ways of creating a zoomify tilesource for openseadragon
+     *
+     * 1) Supplying all necessary information in the tilesource object. A minimal example object for this method looks like this:
+     *
+     * {
+     *      type: "zoomifytileservice",
+     *      width: 1000,
+     *      height: 1000,
+     *      tilesUrl: "/test/data/zoomify/"
+     * }
+     *
+     * The tileSize is currently hardcoded to 256 (the usual Zoomify default). The tileUrl must the the path to the image _directory_.
+     *
+     * 2) Loading image metadata from xml file: (CURRENTLY NOT SUPPORTED)
+     *
+     * When creating zoomify formatted images one "xml" like file with name ImageProperties.xml
+     * will be created as well. Here is an example of such a file:
+     *
+     * <IMAGE_PROPERTIES WIDTH="1000" HEIGHT="1000" NUMTILES="21" NUMIMAGES="1" VERSION="1.8" TILESIZE="256" />
+     *
+     * To use this xml file as metadata source you must supply the path to the ImageProperties.xml file and leave out all other parameters:
+     * As stated above, this method of loading a zoomify tilesource is currently not supported
+     *
+     * {
+     *      type: "zoomifytileservice",
+     *      tilesUrl: "/test/data/zoomify/ImageProperties.xml"
+     * }
+
+    *
+    * @memberof OpenSeadragon
+     * @extends OpenSeadragon.TileSource
+     * @param {Number} width - the pixel width of the image.
+     * @param {Number} height
+     * @param {Number} tileSize
+     * @param {String} tilesUrl
+     */
+    $.ZoomifyTileSource = function(options) {
+        options.tileSize = 256;
+
+        var currentImageSize = {
+            x: options.width,
+            y: options.height
+        };
+        options.imageSizes = [{
+            x: options.width,
+            y: options.height
+        }];
+        options.gridSize = [this._getGridSize(options.width, options.height, options.tileSize)];
+
+        while (parseInt(currentImageSize.x, 10) > options.tileSize || parseInt(currentImageSize.y, 10) > options.tileSize) {
+            currentImageSize.x = Math.floor(currentImageSize.x / 2);
+            currentImageSize.y = Math.floor(currentImageSize.y / 2);
+            options.imageSizes.push({
+                x: currentImageSize.x,
+                y: currentImageSize.y
+            });
+            options.gridSize.push(this._getGridSize(currentImageSize.x, currentImageSize.y, options.tileSize));
+        }
+        options.imageSizes.reverse();
+        options.gridSize.reverse();
+        options.minLevel = 0;
+        options.maxLevel = options.gridSize.length - 1;
+
+        OpenSeadragon.TileSource.apply(this, [options]);
+    };
+
+    $.extend($.ZoomifyTileSource.prototype, $.TileSource.prototype, /** @lends OpenSeadragon.ZoomifyTileSource.prototype */ {
+
+        //private
+        _getGridSize: function(width, height, tileSize) {
+            return {
+                x: Math.ceil(width / tileSize),
+                y: Math.ceil(height / tileSize)
+            };
+        },
+
+        //private
+        _calculateAbsoluteTileNumber: function(level, x, y) {
+            var num = 0;
+            var size = {};
+
+            //Sum up all tiles below the level we want the number of tiles
+            for (var z = 0; z < level; z++) {
+                size = this.gridSize[z];
+                num += size.x * size.y;
+            }
+            //Add the tiles of the level
+            size = this.gridSize[level];
+            num += size.x * y + x;
+            return num;
+        },
+
+        /**
+         * Determine if the data and/or url imply the image service is supported by
+         * this tile source.
+         * @function
+         * @param {Object|Array} data
+         * @param {String} optional - url
+         */
+        supports: function(data, url) {
+            return (data.type && "zoomifytileservice" == data.type);
+        },
+
+        /**
+         *
+         * @function
+         * @param {Object} data - the raw configuration
+         * @param {String} url - the url the data was retreived from if any.
+         * @return {Object} options - A dictionary of keyword arguments sufficient
+         *      to configure this tile sources constructor.
+         */
+        configure: function(data, url) {
+            return data;
+        },
+
+        /**
+         * @function
+         * @param {Number} level
+         * @param {Number} x
+         * @param {Number} y
+         */
+        getTileUrl: function(level, x, y) {
+            //console.log(level);
+            var result = 0;
+            var num = this._calculateAbsoluteTileNumber(level, x, y);
+            result = Math.floor(num / 256);
+            return this.tilesUrl + 'TileGroup' + result + '/' + level + '-' + x + '-' + y + '.jpg';
+
+        }
+    });
+
+}(OpenSeadragon));
+
+
 /*
  * OpenSeadragon - LegacyTileSource
  *
@@ -12834,16 +12996,6 @@ $.extend( $.LegacyTileSource.prototype, $.TileSource.prototype, /** @lends OpenS
             return new $.Point( 0, 0 );
         }
     },
-
-    /**
-     * @function
-     * @param {Number} level
-     * @param {OpenSeadragon.Point} point
-     */
-    getTileAtPoint: function( level, point ) {
-        return new $.Point( 0, 0 );
-    },
-
 
     /**
      * This method is not implemented by this class other than to throw an Error
@@ -13137,14 +13289,6 @@ function configureFromObject( tileSource, configuration ){
             } else {
                 return new $.Point(0, 0);
             }
-        },
-        /**
-         * @function
-         * @param {Number} level
-         * @param {OpenSeadragon.Point} point
-         */
-        getTileAtPoint: function (level, point) {
-            return new $.Point(0, 0);
         },
         /**
          * Retrieves a tile url
@@ -18757,6 +18901,8 @@ $.TiledImage = function( options ) {
 
     }, options );
 
+    this._fullyLoaded = false;
+
     this._xSpring = new $.Spring({
         initial: x,
         springStiffness: this.springStiffness,
@@ -18810,6 +18956,37 @@ $.extend($.TiledImage.prototype, $.EventSource.prototype, /** @lends OpenSeadrag
      */
     needsDraw: function() {
         return this._needsDraw;
+    },
+
+    /**
+     * @returns {Boolean} Whether all tiles necessary for this TiledImage to draw at the current view have been loaded.
+     */
+    getFullyLoaded: function() {
+        return this._fullyLoaded;
+    },
+
+    // private
+    _setFullyLoaded: function(flag) {
+        if (flag === this._fullyLoaded) {
+            return;
+        }
+
+        this._fullyLoaded = flag;
+
+        /**
+         * Fired when the TiledImage's "fully loaded" flag (whether all tiles necessary for this TiledImage
+         * to draw at the current view have been loaded) changes.
+         *
+         * @event fully-loaded-change
+         * @memberof OpenSeadragon.TiledImage
+         * @type {object}
+         * @property {Boolean} fullyLoaded - The new "fully loaded" value.
+         * @property {OpenSeadragon.TiledImage} eventSource - A reference to the TiledImage which raised the event.
+         * @property {?Object} userData - Arbitrary subscriber-defined object.
+         */
+        this.raiseEvent('fully-loaded-change', {
+            fullyLoaded: this._fullyLoaded
+        });
     },
 
     /**
@@ -19508,8 +19685,11 @@ function updateViewport( tiledImage ) {
     // Load the new 'best' tile
     if (best && !best.context2D) {
         loadTile( tiledImage, best, currentTime );
+        tiledImage._needsDraw = true;
+        tiledImage._setFullyLoaded(false);
+    } else {
+        tiledImage._setFullyLoaded(true);
     }
-
 }
 
 
@@ -19561,10 +19741,14 @@ function updateLevel( tiledImage, haveDrawn, drawLevel, level, levelOpacity, lev
 
     resetCoverage( tiledImage.coverage, level );
 
-    if ( !tiledImage.wrapHorizontal ) {
+    if ( tiledImage.wrapHorizontal ) {
+        tileTL.x -= 1; // left invisible column (othervise we will have empty space after scroll at left)
+    } else {
         tileBR.x = Math.min( tileBR.x, numberOfTiles.x - 1 );
     }
-    if ( !tiledImage.wrapVertical ) {
+    if ( tiledImage.wrapVertical ) {
+        tileTL.y -= 1; // top invisible row (othervise we will have empty space after scroll at top)
+    } else {
         tileBR.y = Math.min( tileBR.y, numberOfTiles.y - 1 );
     }
 
@@ -20876,3 +21060,5 @@ $.extend( $.World.prototype, $.EventSource.prototype, /** @lends OpenSeadragon.W
 });
 
 }( OpenSeadragon ));
+
+//# sourceMappingURL=openseadragon.js.map

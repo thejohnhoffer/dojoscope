@@ -37,7 +37,7 @@ DOJO.Source.prototype = {
                 this.datapath + '&start=' + x*width + ',' + y*height + ',' +
                 this.z + '&mip=' + (this.maxLevel - level) + '&size=' +
                 width + ',' + height + ',' + 1 + this.seg;
-        },
+        }
     },
     share: function(from, to) {
         for (var key in from) {

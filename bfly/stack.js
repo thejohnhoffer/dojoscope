@@ -99,8 +99,7 @@ DOJO.Stack.prototype = {
         var maxLevel = this.source[0].tileSource.maxLevel;
         var minLevel = Math.min(Math.ceil(Math.log(z)/Math.LN2), maxLevel);
         if (this.level > minLevel){
-            log('from '+ this.level +' to '+ minLevel)
-            for (it in new Uint8Array(this.w.getItemCount())){
+            for (it in new Uint8Array(this.w.getItemCount())) {
                 var image = this.w.getItemAt(it);
                 image.source.minLevel = 0;
             }
