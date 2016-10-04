@@ -12,7 +12,7 @@ DOJO.Stack = function(src_terms){
     // Setup
     var zBuff = this.zBuff;
     var first = this.now-zBuff;
-    var which = 1;
+    var which = 2;
 
     this.preset.splice(which,1);
     var nLayers = this.preset.length;
@@ -34,7 +34,7 @@ DOJO.Stack = function(src_terms){
 
 DOJO.Stack.prototype = {
     now: 0,
-    zBuff: 1,
+    zBuff: 0,
     preset: [
         {
             set: {},
