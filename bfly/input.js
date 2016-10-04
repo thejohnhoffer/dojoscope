@@ -67,7 +67,6 @@ DOJO.Input.prototype = {
     },
     check: function(slice){
         var level = this.stack.level;
-        log(slice)
         if (slice && slice.lastDrawn.length) {
             return slice.lastDrawn[0].level >= level;
         }
