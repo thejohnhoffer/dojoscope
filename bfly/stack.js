@@ -94,7 +94,6 @@ DOJO.Stack.prototype = {
     },
     refresher: function(e){
         e.item.addHandler('fully-loaded-change',function(e){
-            log('hi')
             if(e.fullyLoaded){
                 e.eventSource.source.minLevel = 0;
                 e.eventSource.draw();

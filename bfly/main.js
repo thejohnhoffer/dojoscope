@@ -29,8 +29,8 @@ window.onload = function(e){{}
         showZoomControl: 0,
         id: 'viaWebGL'
     });
-    SCOPE.openSD.world.addHandler('add-item', SCOPE.stack.refresher.bind(this.stack));
-    SCOPE.openSD.addHandler('zoom',this.stack.zoomer.bind(this.stack));
+    SCOPE.openSD.world.addHandler('add-item', SCOPE.stack.refresher.bind(SCOPE.stack));
+    SCOPE.openSD.addHandler('zoom',SCOPE.stack.zoomer.bind(SCOPE.stack));
     // Link everything to WebGL
     SCOPE.stack.init(SCOPE.openSD);
     SCOPE.link = new DOJO.Input(SCOPE);
