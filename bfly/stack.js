@@ -12,8 +12,8 @@ DOJO.Stack = function(src_terms){
     // Setup
     var zBuff = this.zBuff;
     var first = this.now-zBuff;
-    var which = 2;
-    var glflag = Number(src_terms.gl) || 0;
+    var glflag = Number(src_terms.gl || 0);
+    var which = Number(src_terms.image || 2);
     this.preset[1].set.opacity = [.5,1][glflag];
 
     this.preset.splice(which,1);
@@ -32,7 +32,7 @@ DOJO.Stack = function(src_terms){
 
 DOJO.Stack.prototype = {
     now: 0,
-    zBuff: 2,
+    zBuff: 1,
     preset: [
         {
             set: {},
