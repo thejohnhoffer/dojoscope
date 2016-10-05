@@ -13,6 +13,8 @@ DOJO.Stack = function(src_terms){
     var zBuff = this.zBuff;
     var first = this.now-zBuff;
     var which = 2;
+    var glflag = Number(src_terms.gl) || 0;
+    this.preset[1].set.opacity = [.5,1][glflag];
 
     this.preset.splice(which,1);
     var nLayers = this.preset.length;
@@ -37,7 +39,7 @@ DOJO.Stack.prototype = {
             src: {}
         },
         {
-            set: {opacity: .5},
+            set: {},
             src: {segmentation: true}
         }
     ],

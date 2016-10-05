@@ -5,7 +5,7 @@
 //-----------------------------------
 
 DOJO.Source = function(src_terms){
-    this.glflag = 0;
+    this.glflag = Number(src_terms.gl) || 0;
     // Change the default source terms
     this.tileSource = this.share(src_terms, this.tileSource);
 }
