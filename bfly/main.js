@@ -1,8 +1,8 @@
 var SCOPE = {};
 var DOJO = {};
 var log = function(x,n) {
-  console.log(x);
-  if (n) console.log(new Error().stack.split(/\n/).splice(2,n).join('\n'));
+//  console.log(x);
+//  if (n) console.log(new Error().stack.split(/\n/).splice(2,n).join('\n'));
 }
 //-----------------------------------
 //
@@ -30,6 +30,7 @@ window.onload = function(e){{}
         id: 'viaWebGL'
     });
     SCOPE.openSD.world.addHandler('add-item', SCOPE.stack.refresher.bind(SCOPE.stack));
+    SCOPE.openSD.addHandler('update-level',SCOPE.stack.porter.bind(SCOPE.stack));
     SCOPE.openSD.addHandler('zoom',SCOPE.stack.zoomer.bind(SCOPE.stack));
     // Link everything to WebGL
     SCOPE.stack.init(SCOPE.openSD);

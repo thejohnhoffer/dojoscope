@@ -35,10 +35,9 @@ DOJO.Input.prototype = {
         }
     },
     event: function(event) {
-        var total = this.stack.source.length;
         var slices = this.stack.event(event);
         if (slices.every(this.check.bind(this))) {
-            if (total == this.osd.world.getItemCount()) {
+            if (this.stack.total == this.stack.w.getItemCount()) {
                 return this[event](this.stack);
             }
         }

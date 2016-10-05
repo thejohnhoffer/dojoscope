@@ -17,20 +17,15 @@ DOJO.Stack = function(src_terms){
     this.preset.splice(which,1);
     var nLayers = this.preset.length;
     var keys = this.range(2*zBuff+1);
-    var arrows = this.arrows.bind(this);
     var addFirst = this.add.bind(first);
     var join = this.join.bind(this,nLayers);
-    var timesLayers = this.times.bind(nLayers);
-    var index = [0, zBuff, zBuff-1, 2*zBuff-1];
-    index = [].slice.call(new Uint8ClampedArray(index));
-    var addRange = this.addRange.bind(this, nLayers);
 
     // Prepare the sources
     keys.push(keys.splice(zBuff, 1)[0]);
     this.protoSource = new DOJO.Source(src_terms);
     this.source = keys.map(addFirst).reduce(join,[]);
-    this.index = index.map(timesLayers).map(addRange).reduce(arrows,{});
-    this.total = nLayers*keys;
+    this.index = this.indexer(zBuff,nLayers);
+    this.total = nLayers*keys.length;
 }
 
 DOJO.Stack.prototype = {
@@ -42,7 +37,7 @@ DOJO.Stack.prototype = {
             src: {}
         },
         {
-            set: {},
+            set: {opacity: .5},
             src: {segmentation: true}
         }
     ],
@@ -74,6 +69,14 @@ DOJO.Stack.prototype = {
         var source = this.protoSource.init(this.share(layer.src, src));
         return this.share(this.share(layer.set, {index:indices[i]}), source);
     },
+    indexer: function(zBuff, nLayers){
+        var arrows = this.arrows.bind(this);
+        var index = [0, zBuff, zBuff-1, 2*zBuff-1];
+        var timesLayers = this.times.bind(nLayers);
+        var addRange = this.addRange.bind(this, nLayers);
+        index = [].slice.call(new Uint8ClampedArray(index));
+        return index.map(timesLayers).map(addRange).reduce(arrows,{});
+    },
     make: function(zLevel, indices) {
         return this.preset.map(this.sourcer.bind(this,zLevel,indices));
     },
@@ -98,11 +101,17 @@ DOJO.Stack.prototype = {
     },
     refresher: function(e){
         e.item.addHandler('fully-loaded-change',function(e){
+            var event = e.eventSource;
+            var source = event.source;
             if(e.fullyLoaded){
-                e.eventSource.source.minLevel = 0;
-                e.eventSource.draw();
+                source.minLevel = 0;
+                event.draw();
+                return;
             }
-        });
+        }.bind(this));
+    },
+    porter: function(e){
+        log(e.best)
     },
     zoomer: function(e){
         var z = Math.max(e.zoom,1);
