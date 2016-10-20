@@ -15,12 +15,12 @@ DOJO.Sourcer = function(terms) {
     this.depth = 1;
     this.alpha = 1;
     this.minLevel = 0;
-    this.width = 1024;
+    this.width = 520;
     this.segment = '';
-    this.height = 1024;
+    this.height = 520;
     this.tileSize = 512;
     this.server = 'localhost:2001';
-    this.datapath = '/Volumes/NeuroData/mojo';
+    this.datapath = '/Volumes/Lexar/Kevin';
 
     // Add new terms
     for (var key in terms) {
